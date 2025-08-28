@@ -4,8 +4,9 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 
-import { Product, CreateProductRequest, UpdateProductRequest } from '../../../../shared/models/product.model';
+import { Product, CreateProductRequest, UpdateProductRequest, ImageUpload } from '../../../../shared/models/product.model';
 import { ProductService } from '../../../../core/services/product.service';
+import { ImageUploadComponent } from '../../../../shared/components/image-upload/image-upload.component';
 
 @Component({
   selector: 'app-product-form',
