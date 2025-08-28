@@ -149,9 +149,19 @@ export class ProductsComponent implements OnInit {
 
   private async loadProducts(): Promise<void> {
     try {
-      const products = await firstValueFrom(this.productService.getProducts());
-      this.products.set(products);
-      this.filteredProducts.set(products);
+      const pagination = this.paginationState();
+      const skip = (pagination.currentPage - 1) * pagination.pageSize;
+      
+      const response = await firstValueFrom(
+        this.productService.getProducts(this.currentSearchQuery, pagination.pageSize, skip)
+      );
+      
+      this.filteredProducts.set(response.products);
+      this.paginationState.set({
+        ...pagination,
+        totalItems: response.total,
+        totalPages: Math.ceil(response.total / pagination.pageSize)
+      });
     } catch (error) {
       console.error('Error loading products:', error);
     }
