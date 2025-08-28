@@ -26,8 +26,22 @@ export interface CreateProductRequest {
   stock: number;
   brand?: string;
   category: string;
+  images?: string[];
 }
 
 export interface UpdateProductRequest extends CreateProductRequest {
   id: number;
+}
+
+export interface PaginationState {
+  currentPage: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface ImageUpload {
+  file: File;
+  url: string;
+  id: string;
 }
