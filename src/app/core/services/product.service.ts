@@ -13,18 +13,21 @@ export class ProductService {
   private readonly baseUrl = 'https://dummyjson.com';
 
   /**
-   * Get all products with optional search
+   * Get all products with optional search and pagination
    */
-  getProducts(searchQuery?: string): Observable<Product[]> {
-    const url = searchQuery 
-      ? `${this.baseUrl}/products/search?q=${encodeURIComponent(searchQuery)}`
-      : `${this.baseUrl}/products?limit=100`;
+  getProducts(searchQuery?: string, limit: number = 12, skip: number = 0): Observable<ProductsResponse> {
+    let url: string;
+    
+    if (searchQuery) {
+      url = `${this.baseUrl}/products/search?q=${encodeURIComponent(searchQuery)}&limit=${limit}&skip=${skip}`;
+    } else {
+      url = `${this.baseUrl}/products?limit=${limit}&skip=${skip}`;
+    }
 
     return this.http.get<ProductsResponse>(url).pipe(
-      map(response => response.products),
       catchError(error => {
         console.error('Error fetching products:', error);
-        return of([]);
+        return of({ products: [], total: 0, skip: 0, limit: 0 });
       })
     );
   }
