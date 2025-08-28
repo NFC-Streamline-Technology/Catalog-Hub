@@ -264,4 +264,9 @@ export class ProductsComponent implements OnInit {
   protected trackByProductId(index: number, product: Product): number {
     return product.id;
   }
+
+  protected onPageChanged(page: number): void {
+    this.paginationState.update(state => ({ ...state, currentPage: page }));
+    this.loadProducts();
+  }
 }
