@@ -1,0 +1,53 @@
+{
+  "generic": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "search": "Pesquisar",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "confirm": "Confirmar",
+    "yes": "Sim",
+    "no": "Não",
+    "back": "Voltar",
+    "close": "Fechar",
+    "required": "Campo obrigatório",
+    "invalid": "Campo inválido"
+  },
+  "pages": {
+    "products": {
+      "title": "Catálogo de Produtos",
+      "subtitle": "Gerencie seus produtos de forma simples e eficiente",
+      "searchPlaceholder": "Pesquisar produtos...",
+      "noProducts": "Nenhum produto encontrado",
+      "createProduct": "Criar Produto",
+      "editProduct": "Editar Produto",
+      "deleteConfirm": "Tem certeza que deseja excluir este produto?",
+      "productCreated": "Produto criado com sucesso!",
+      "productUpdated": "Produto atualizado com sucesso!",
+      "productDeleted": "Produto excluído com sucesso!",
+      "fields": {
+        "title": "Título",
+        "description": "Descrição",
+        "price": "Preço",
+        "category": "Categoria",
+        "brand": "Marca",
+        "stock": "Estoque"
+      },
+      "validation": {
+        "titleRequired": "Título é obrigatório",
+        "titleMinLength": "Título deve ter pelo menos 3 caracteres",
+        "descriptionRequired": "Descrição é obrigatória",
+        "descriptionMinLength": "Descrição deve ter pelo menos 10 caracteres",
+        "priceRequired": "Preço é obrigatório",
+        "priceMin": "Preço deve ser maior que 0",
+        "categoryRequired": "Categoria é obrigatória",
+        "stockRequired": "Estoque é obrigatório",
+        "stockMin": "Estoque deve ser maior ou igual a 0"
+      }
+    }
+  }
+}
