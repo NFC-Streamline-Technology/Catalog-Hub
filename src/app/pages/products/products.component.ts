@@ -64,6 +64,14 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
             (delete)="openDeleteConfirm(product)"
           ></app-product-card>
         </div>
+        
+        <!-- Pagination -->
+        <div class="mt-8">
+          <app-pagination
+            [pagination]="paginationState()"
+            (pageChanged)="onPageChanged($event)"
+          ></app-pagination>
+        </div>
       </div>
       <ng-template #noProducts>
         <div class="text-center py-12">
