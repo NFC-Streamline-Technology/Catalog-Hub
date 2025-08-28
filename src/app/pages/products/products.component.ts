@@ -174,15 +174,33 @@ export class ProductsComponent implements OnInit {
       distinctUntilChanged(),
       switchMap(query => {
         const searchQuery = query?.trim() || '';
-        if (searchQuery) {
-          return this.productService.getProducts(searchQuery);
-        } else {
-          return this.productService.getProducts();
-        }
+        this.currentSearchQuery = searchQuery;
+        
+        // Reset to first page when searching
+        this.paginationState.update(state => ({ ...state, currentPage: 1 }));
+        
+        return this.loadProductsForSearch(searchQuery);
       })
-    ).subscribe(products => {
-      this.filteredProducts.set(products);
-    });
+    ).subscribe();
+  }
+
+  private async loadProductsForSearch(searchQuery: string): Promise<void> {
+    try {
+      const pagination = this.paginationState();
+      const response = await firstValueFrom(
+        this.productService.getProducts(searchQuery, pagination.pageSize, 0)
+      );
+      
+      this.filteredProducts.set(response.products);
+      this.paginationState.set({
+        ...pagination,
+        currentPage: 1,
+        totalItems: response.total,
+        totalPages: Math.ceil(response.total / pagination.pageSize)
+      });
+    } catch (error) {
+      console.error('Error searching products:', error);
+    }
   }
 
   protected openCreateForm(): void {
