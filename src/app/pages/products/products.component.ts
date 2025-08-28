@@ -115,6 +115,15 @@ export class ProductsComponent implements OnInit {
   protected showDeleteConfirm = signal(false);
   protected selectedProduct = signal<Product | null>(null);
   protected translate: any;
+  protected paginationState = signal<PaginationState>({
+    currentPage: 1,
+    pageSize: 12,
+    totalItems: 0,
+    totalPages: 0
+  });
+
+  // Search state
+  private currentSearchQuery = '';
 
   // Form controls
   protected searchControl = new FormControl('');
