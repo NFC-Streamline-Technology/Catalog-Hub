@@ -15,7 +15,20 @@
     "back": "Back",
     "close": "Close",
     "required": "Required field",
-    "invalid": "Invalid field"
+    "invalid": "Invalid field",
+    "add": "Add",
+    "optional": "optional"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "results": "results",
+    "page": "Page",
+    "firstPage": "First page",
+    "lastPage": "Last page"
   },
   "pages": {
     "products": {
@@ -29,6 +42,12 @@
       "productCreated": "Product created successfully!",
       "productUpdated": "Product updated successfully!",
       "productDeleted": "Product deleted successfully!",
+      "images": "Images",
+      "uploadFile": "Upload file",
+      "orDragDrop": "or drag and drop",
+      "imageFormats": "PNG, JPG, GIF up to 10MB each",
+      "addByUrl": "Add by URL",
+      "primary": "Primary",
       "fields": {
         "title": "Title",
         "description": "Description",
