@@ -161,6 +161,12 @@ import { ImageUploadComponent } from '../../../../shared/components/image-upload
                 />
               </div>
             </div>
+
+            <!-- Images Upload -->
+            <app-image-upload
+              [images]="productImages"
+              (imagesChange)="onImagesChange($event)"
+            ></app-image-upload>
           </div>
 
           <!-- Footer -->
