@@ -20,7 +20,8 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
     ReactiveFormsModule,
     ProductFormComponent,
     ProductCardComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    PaginationComponent
   ],
   template: `
     <div class="space-y-6">
