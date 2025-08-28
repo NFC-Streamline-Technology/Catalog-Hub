@@ -5,11 +5,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged, switchMap, startWith } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 
-import { Product } from '../../shared/models/product.model';
+import { Product, PaginationState } from '../../shared/models/product.model';
 import { ProductService } from '../../core/services/product.service';
 import { ProductFormComponent } from './components/product-form/product-form.component';
 import { ProductCardComponent } from './components/product-card/product-card.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-products',
