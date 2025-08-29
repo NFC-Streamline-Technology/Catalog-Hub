@@ -1,7 +1,6 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { firstValueFrom } from 'rxjs';
 
 import { Product } from '../../shared/models/product.model';
@@ -14,17 +13,17 @@ interface KPIData {
   uniqueCategories: number;
 }
 
-interface ChartData {
+interface CategoryData {
   name: string;
-  value: number;
+  count: number;
+  percentage: number;
 }
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
-    NgxChartsModule
+    CommonModule
   ],
   template: `
     <div class="space-y-8">
@@ -45,100 +44,108 @@ interface ChartData {
       </div>
 
       <!-- Dashboard Content -->
-      <div *ngIf="!isLoading()" class="space-y-8">
+      <div *ngIf="!isLoading() && !hasError()" class="space-y-8">
         <!-- KPI Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Total Products -->
-          <div class="card">
+          <div class="card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600">
+                <p class="text-sm font-medium text-blue-800">
                   {{ translate?.kpi?.totalProducts || 'Total de Produtos' }}
                 </p>
-                <p class="text-2xl font-bold text-gray-900">
+                <p class="text-3xl font-bold text-blue-900">
                   {{ kpiData().totalProducts }}
                 </p>
               </div>
-              <div class="p-3 bg-blue-100 rounded-full">
-                <div class="text-2xl text-blue-600">📦</div>
+              <div class="p-3 bg-blue-200 rounded-full">
+                <div class="text-2xl text-blue-800">📦</div>
               </div>
             </div>
           </div>
 
           <!-- Total Stock Value -->
-          <div class="card">
+          <div class="card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600">
+                <p class="text-sm font-medium text-green-800">
                   {{ translate?.kpi?.totalStockValue || 'Valor Total do Estoque' }}
                 </p>
-                <p class="text-2xl font-bold text-gray-900">
+                <p class="text-3xl font-bold text-green-900">
                   &#36;{{ formatNumber(kpiData().totalStockValue) }}
                 </p>
               </div>
-              <div class="p-3 bg-green-100 rounded-full">
-                <div class="text-2xl text-green-600">💰</div>
+              <div class="p-3 bg-green-200 rounded-full">
+                <div class="text-2xl text-green-800">💰</div>
               </div>
             </div>
           </div>
 
           <!-- Average Price -->
-          <div class="card">
+          <div class="card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600">
+                <p class="text-sm font-medium text-yellow-800">
                   {{ translate?.kpi?.averagePrice || 'Preço Médio dos Produtos' }}
                 </p>
-                <p class="text-2xl font-bold text-gray-900">
+                <p class="text-3xl font-bold text-yellow-900">
                   &#36;{{ formatNumber(kpiData().averagePrice) }}
                 </p>
               </div>
-              <div class="p-3 bg-yellow-100 rounded-full">
-                <div class="text-2xl text-yellow-600">📊</div>
+              <div class="p-3 bg-yellow-200 rounded-full">
+                <div class="text-2xl text-yellow-800">📊</div>
               </div>
             </div>
           </div>
 
           <!-- Unique Categories -->
-          <div class="card">
+          <div class="card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600">
+                <p class="text-sm font-medium text-purple-800">
                   {{ translate?.kpi?.uniqueCategories || 'Número de Categorias Únicas' }}
                 </p>
-                <p class="text-2xl font-bold text-gray-900">
+                <p class="text-3xl font-bold text-purple-900">
                   {{ kpiData().uniqueCategories }}
                 </p>
               </div>
-              <div class="p-3 bg-purple-100 rounded-full">
-                <div class="text-2xl text-purple-600">🏷️</div>
+              <div class="p-3 bg-purple-200 rounded-full">
+                <div class="text-2xl text-purple-800">🏷️</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Chart Section -->
+        <!-- Categories Chart Alternative -->
         <div class="card">
           <div class="mb-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-2">
               {{ translate?.chart?.title || 'Produtos por Categoria' }}
             </h2>
+            <p class="text-gray-600">
+              Distribuição dos produtos por categoria do catálogo
+            </p>
           </div>
           
-          <div class="h-96">
-            <ngx-charts-bar-vertical
-              [results]="chartData()"
-              [xAxis]="true"
-              [yAxis]="true"
-              [legend]="false"
-              [showXAxisLabel]="true"
-              [showYAxisLabel]="true"
-              [xAxisLabel]="translate?.chart?.xAxisLabel || 'Categoria'"
-              [yAxisLabel]="translate?.chart?.yAxisLabel || 'Quantidade'"
-              [gradient]="false"
-              [animations]="true"
-              [showGridLines]="true">
-            </ngx-charts-bar-vertical>
+          <!-- Category Bars -->
+          <div class="space-y-4">
+            <div *ngFor="let category of categoriesData(); trackBy: trackByCategory" 
+                 class="flex items-center space-x-4">
+              <div class="w-24 text-sm font-medium text-gray-700 truncate">
+                {{ category.name }}
+              </div>
+              <div class="flex-1 bg-gray-200 rounded-full h-6 relative">
+                <div class="bg-primary-600 h-6 rounded-full transition-all duration-300"
+                     [style.width.%]="category.percentage">
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+                  {{ category.count }} produtos
+                </div>
+              </div>
+              <div class="w-12 text-sm text-gray-600">
+                {{ category.percentage }}%
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -150,8 +157,14 @@ interface ChartData {
           {{ genericTranslate?.error || 'Erro' }}
         </h3>
         <p class="text-gray-500">
-          Não foi possível carregar os dados do dashboard.
+          Não foi possível carregar os dados do dashboard. Verifique sua conexão com a internet.
         </p>
+        <button 
+          (click)="loadDashboardData()"
+          class="mt-4 btn-primary"
+        >
+          Tentar Novamente
+        </button>
       </div>
     </div>
   `
@@ -193,7 +206,7 @@ export class DashboardComponent implements OnInit {
     };
   });
 
-  protected chartData = computed<ChartData[]>(() => {
+  protected categoriesData = computed<CategoryData[]>(() => {
     const products = this.products();
     
     if (products.length === 0) {
@@ -206,16 +219,17 @@ export class DashboardComponent implements OnInit {
       return acc;
     }, {} as Record<string, number>);
 
+    const totalProducts = products.length;
+
     // Convert to chart format and sort by value descending
     return Object.entries(categoryCount)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value);
+      .map(([name, count]) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        count,
+        percentage: Math.round((count / totalProducts) * 100)
+      }))
+      .sort((a, b) => b.count - a.count);
   });
-
-  // Chart color scheme
-  protected colorScheme = {
-    domain: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444', '#06B6D4', '#84CC16', '#F97316']
-  };
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
@@ -239,7 +253,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  private async loadDashboardData(): Promise<void> {
+  protected async loadDashboardData(): Promise<void> {
     try {
       this.isLoading.set(true);
       this.hasError.set(false);
@@ -260,5 +274,9 @@ export class DashboardComponent implements OnInit {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(value);
+  }
+
+  protected trackByCategory(index: number, category: CategoryData): string {
+    return category.name;
   }
 }
