@@ -73,7 +73,7 @@ interface ChartData {
                   {{ translate?.kpi?.totalStockValue || 'Valor Total do Estoque' }}
                 </p>
                 <p class="text-2xl font-bold text-gray-900">
-                  ${{ formatNumber(kpiData().totalStockValue) }}
+                  &#36;{{ formatNumber(kpiData().totalStockValue) }}
                 </p>
               </div>
               <div class="p-3 bg-green-100 rounded-full">
@@ -90,7 +90,7 @@ interface ChartData {
                   {{ translate?.kpi?.averagePrice || 'Preço Médio dos Produtos' }}
                 </p>
                 <p class="text-2xl font-bold text-gray-900">
-                  ${{ formatNumber(kpiData().averagePrice) }}
+                  &#36;{{ formatNumber(kpiData().averagePrice) }}
                 </p>
               </div>
               <div class="p-3 bg-yellow-100 rounded-full">
