@@ -31,6 +31,21 @@
     "lastPage": "Last page"
   },
   "pages": {
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Overview of your products and statistics",
+      "kpi": {
+        "totalProducts": "Total Products",
+        "totalStockValue": "Total Stock Value", 
+        "averagePrice": "Average Product Price",
+        "uniqueCategories": "Number of Unique Categories"
+      },
+      "chart": {
+        "title": "Products by Category",
+        "xAxisLabel": "Category",
+        "yAxisLabel": "Quantity"
+      }
+    },
     "products": {
       "title": "Product Catalog",
       "subtitle": "Manage your products simply and efficiently",
