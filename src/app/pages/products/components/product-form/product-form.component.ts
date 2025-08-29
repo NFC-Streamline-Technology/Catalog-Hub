@@ -253,6 +253,22 @@ export class ProductFormComponent implements OnInit, OnChanges {
         category: this.product.category,
         brand: this.product.brand || ''
       });
+
+      // Set product images
+      this.productImages = [];
+      if (this.product.images && this.product.images.length > 0) {
+        this.productImages = this.product.images.map((url, index) => ({
+          id: `existing-${index}`,
+          url: url,
+          file: null as any
+        }));
+      } else if (this.product.thumbnail) {
+        this.productImages = [{
+          id: 'existing-0',
+          url: this.product.thumbnail,
+          file: null as any
+        }];
+      }
     } else {
       this.productForm.reset({
         title: '',
@@ -262,6 +278,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
         category: '',
         brand: ''
       });
+      this.productImages = [];
     }
   }
 
