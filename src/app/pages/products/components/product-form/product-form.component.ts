@@ -211,6 +211,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
   protected categories = signal<string[]>([]);
   protected isSubmitting = signal(false);
   protected translate: any;
+  protected productImages: ImageUpload[] = [];
 
   ngOnInit(): void {
     this.initializeForm();
