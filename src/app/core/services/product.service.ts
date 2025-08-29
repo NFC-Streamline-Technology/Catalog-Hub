@@ -85,6 +85,19 @@ export class ProductService {
   }
 
   /**
+   * Get ALL products without pagination (for dashboard calculations)
+   */
+  getAllProducts(): Observable<Product[]> {
+    return this.http.get<ProductsResponse>(`${this.baseUrl}/products?limit=0`).pipe(
+      map(response => response.products),
+      catchError(error => {
+        console.error('Error fetching all products:', error);
+        return of([]);
+      })
+    );
+  }
+
+  /**
    * Get product categories
    */
   getCategories(): Observable<string[]> {
