@@ -136,7 +136,7 @@ interface ChartData {
               [xAxisLabel]="translate?.chart?.xAxisLabel || 'Categoria'"
               [yAxisLabel]="translate?.chart?.yAxisLabel || 'Quantidade'"
               [gradient]="false"
-              [colorScheme]="colorScheme"
+              [scheme]="colorScheme"
               [animations]="true"
               [showGridLines]="true">
             </ngx-charts-bar-vertical>
