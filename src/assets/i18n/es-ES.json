@@ -15,7 +15,20 @@
     "back": "Volver",
     "close": "Cerrar",
     "required": "Campo requerido",
-    "invalid": "Campo inválido"
+    "invalid": "Campo inválido",
+    "add": "Añadir",
+    "optional": "opcional"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "showing": "Mostrando",
+    "to": "a",
+    "of": "de",
+    "results": "resultados",
+    "page": "Página",
+    "firstPage": "Primera página",
+    "lastPage": "Última página"
   },
   "pages": {
     "products": {
@@ -29,6 +42,12 @@
       "productCreated": "¡Producto creado exitosamente!",
       "productUpdated": "¡Producto actualizado exitosamente!",
       "productDeleted": "¡Producto eliminado exitosamente!",
+      "images": "Imágenes",
+      "uploadFile": "Subir archivo",
+      "orDragDrop": "o arrastra y suelta",
+      "imageFormats": "PNG, JPG, GIF hasta 10MB cada uno",
+      "addByUrl": "Añadir por URL",
+      "primary": "Principal",
       "fields": {
         "title": "Título",
         "description": "Descripción",
