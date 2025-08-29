@@ -316,17 +316,24 @@ export class ProductFormComponent implements OnInit, OnChanges {
     try {
       const formValue = this.productForm.value;
       
+      // Convert images to URLs
+      const imageUrls = this.productImages.map(img => img.url);
+      
       if (this.isEditMode()) {
         const updateRequest: UpdateProductRequest = {
           id: this.product!.id,
-          ...formValue
+          ...formValue,
+          images: imageUrls
         };
         const updatedProduct = await firstValueFrom(this.productService.updateProduct(updateRequest));
         if (updatedProduct) {
           this.saved.emit(updatedProduct);
         }
       } else {
-        const createRequest: CreateProductRequest = formValue;
+        const createRequest: CreateProductRequest = {
+          ...formValue,
+          images: imageUrls
+        };
         const newProduct = await firstValueFrom(this.productService.createProduct(createRequest));
         if (newProduct) {
           this.saved.emit(newProduct);
@@ -341,5 +348,9 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   protected onCancel(): void {
     this.cancelled.emit();
+  }
+
+  protected onImagesChange(images: ImageUpload[]): void {
+    this.productImages = images;
   }
 }
