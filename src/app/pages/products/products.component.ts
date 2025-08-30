@@ -306,4 +306,15 @@ export class ProductsComponent implements OnInit {
     this.paginationState.update(state => ({ ...state, currentPage: page }));
     this.loadProducts();
   }
+
+  protected getStartItem(): number {
+    const pagination = this.paginationState();
+    return (pagination.currentPage - 1) * pagination.pageSize + 1;
+  }
+
+  protected getEndItem(): number {
+    const pagination = this.paginationState();
+    const end = pagination.currentPage * pagination.pageSize;
+    return Math.min(end, pagination.totalItems);
+  }
 }
