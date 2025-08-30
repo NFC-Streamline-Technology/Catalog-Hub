@@ -59,8 +59,9 @@ import { PaginationState } from '../../models/product.model';
               *ngFor="let page of getVisiblePages()"
               (click)="onPageChange(page)"
               [class]="getPageButtonClass(page)"
+              [disabled]="page === -1"
             >
-              {{ page }}
+              {{ page === -1 ? '...' : page }}
             </button>
 
             <!-- Next button -->
