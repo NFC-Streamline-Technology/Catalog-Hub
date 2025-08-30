@@ -153,4 +153,31 @@ export class ProductCardComponent implements OnInit {
   protected getPriceDisplay(price: number): string {
     return `$${price.toFixed(2)}`;
   }
+
+  protected getOriginalPrice(price: number, discountPercentage: number): string {
+    const originalPrice = price / (1 - discountPercentage / 100);
+    return `$${originalPrice.toFixed(2)}`;
+  }
+
+  protected getStockBadgeClass(): string {
+    const stock = this.product.stock;
+    if (stock === 0) {
+      return 'bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full';
+    } else if (stock <= 10) {
+      return 'bg-yellow-500 text-white text-xs font-medium px-2 py-1 rounded-full';
+    } else {
+      return 'bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full';
+    }
+  }
+
+  protected getStockText(): string {
+    const stock = this.product.stock;
+    if (stock === 0) {
+      return 'Esgotado';
+    } else if (stock <= 10) {
+      return `${stock} restantes`;
+    } else {
+      return `${stock} em estoque`;
+    }
+  }
 }
