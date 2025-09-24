@@ -13,12 +13,14 @@ export class ProductService {
   private readonly baseUrl = 'https://dummyjson.com';
 
   /**
-   * Get all products with optional search and pagination
+   * Get all products with optional search, category filter and pagination
    */
-  getProducts(searchQuery?: string, limit: number = 12, skip: number = 0): Observable<ProductsResponse> {
+  getProducts(searchQuery?: string, category?: string, limit: number = 12, skip: number = 0): Observable<ProductsResponse> {
     let url: string;
     
-    if (searchQuery) {
+    if (category && category !== 'all') {
+      url = `${this.baseUrl}/products/category/${encodeURIComponent(category)}?limit=${limit}&skip=${skip}`;
+    } else if (searchQuery) {
       url = `${this.baseUrl}/products/search?q=${encodeURIComponent(searchQuery)}&limit=${limit}&skip=${skip}`;
     } else {
       url = `${this.baseUrl}/products?limit=${limit}&skip=${skip}`;
