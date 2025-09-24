@@ -127,23 +127,69 @@ interface CategoryData {
             </p>
           </div>
           
-          <!-- Category Bars -->
-          <div class="space-y-4">
-            <div *ngFor="let category of categoriesData(); trackBy: trackByCategory" 
-                 class="flex items-center space-x-4">
-              <div class="w-24 text-sm font-medium text-gray-700 truncate">
-                {{ category.name }}
-              </div>
-              <div class="flex-1 bg-gray-200 rounded-full h-6 relative">
-                <div class="bg-primary-600 h-6 rounded-full transition-all duration-300"
-                     [style.width.%]="category.percentage">
+          <!-- Top Categories Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div *ngFor="let category of getTopCategories(); let i = index" 
+                 class="bg-gradient-to-r p-4 rounded-lg text-white"
+                 [ngStyle]="{'background': getGradientColor(i)}">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm opacity-90">{{ category.name }}</p>
+                  <p class="text-2xl font-bold">{{ category.count }}</p>
+                  <p class="text-xs opacity-75">{{ category.percentage }}% do total</p>
                 </div>
-                <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
-                  {{ category.count }} produtos
+                <div class="text-2xl opacity-80">
+                  {{ getCategoryIcon(category.name) }}
                 </div>
               </div>
-              <div class="w-12 text-sm text-gray-600">
-                {{ category.percentage }}%
+            </div>
+          </div>
+          
+          <!-- Full Category List with Visual Bars -->
+          <div class="space-y-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Todas as Categorias</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+              <div *ngFor="let category of categoriesData(); let i = index" 
+                   class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                     [ngStyle]="{'background-color': getColorForIndex(i)}">
+                  {{ category.count }}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      {{ category.name }}
+                    </p>
+                    <span class="text-xs text-gray-500">{{ category.percentage }}%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="h-2 rounded-full transition-all duration-500"
+                         [ngStyle]="{'width.%': category.percentage, 'background-color': getColorForIndex(i)}">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Summary Stats -->
+          <div class="mt-6 pt-4 border-t border-gray-200">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div>
+                <div class="text-2xl font-bold text-blue-600">{{ categoriesData().length }}</div>
+                <div class="text-xs text-gray-600">Total de Categorias</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-green-600">{{ getMostPopularCategory()?.name || '-' }}</div>
+                <div class="text-xs text-gray-600">Mais Popular</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-purple-600">{{ getAverageProductsPerCategory() }}</div>
+                <div class="text-xs text-gray-600">Média por Categoria</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-orange-600">{{ getMostPopularCategory()?.count || 0 }}</div>
+                <div class="text-xs text-gray-600">Produtos na Maior</div>
               </div>
             </div>
           </div>
