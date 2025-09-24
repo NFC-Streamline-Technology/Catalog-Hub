@@ -36,7 +36,7 @@
       "subtitle": "Visão geral dos seus produtos e estatísticas",
       "kpi": {
         "totalProducts": "Total de Produtos",
-        "totalStockValue": "Valor Total do Estoque", 
+        "totalStockValue": "Valor Total do Estoque",
         "averagePrice": "Preço Médio dos Produtos",
         "uniqueCategories": "Número de Categorias Únicas"
       },

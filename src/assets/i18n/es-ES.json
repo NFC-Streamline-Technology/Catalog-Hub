@@ -36,7 +36,7 @@
       "subtitle": "Resumen de tus productos y estadísticas",
       "kpi": {
         "totalProducts": "Total de Productos",
-        "totalStockValue": "Valor Total del Stock", 
+        "totalStockValue": "Valor Total del Stock",
         "averagePrice": "Precio Promedio de Productos",
         "uniqueCategories": "Número de Categorías Únicas"
       },

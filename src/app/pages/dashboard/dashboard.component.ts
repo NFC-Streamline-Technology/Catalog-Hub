@@ -1,10 +1,10 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { TranslateService } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
+import { Component, OnInit, signal, inject, computed } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { TranslateService } from "@ngx-translate/core";
+import { firstValueFrom } from "rxjs";
 
-import { Product } from '../../shared/models/product.model';
-import { ProductService } from '../../core/services/product.service';
+import { Product } from "../../shared/models/product.model";
+import { ProductService } from "../../core/services/product.service";
 
 interface KPIData {
   totalProducts: number;
@@ -20,27 +20,30 @@ interface CategoryData {
 }
 
 @Component({
-  selector: 'app-dashboard',
+  selector: "app-dashboard",
   standalone: true,
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   template: `
     <div class="space-y-8">
       <!-- Header -->
       <div>
         <h1 class="text-3xl font-bold text-gray-900">
-          {{ translate?.title || 'Dashboard' }}
+          {{ translate?.title || "Dashboard" }}
         </h1>
         <p class="text-gray-600 mt-1">
-          {{ translate?.subtitle || 'Visão geral dos seus produtos e estatísticas' }}
+          {{
+            translate?.subtitle ||
+              "Visão geral dos seus produtos e estatísticas"
+          }}
         </p>
       </div>
 
       <!-- Loading State -->
       <div *ngIf="isLoading()" class="flex justify-center items-center py-12">
         <div class="spinner w-8 h-8"></div>
-        <span class="ml-2 text-gray-600">{{ genericTranslate?.loading || 'Carregando...' }}</span>
+        <span class="ml-2 text-gray-600">{{
+          genericTranslate?.loading || "Carregando..."
+        }}</span>
       </div>
 
       <!-- Dashboard Content -->
@@ -48,11 +51,13 @@ interface CategoryData {
         <!-- KPI Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Total Products -->
-          <div class="card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <div
+            class="card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200"
+          >
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-blue-800">
-                  {{ translate?.kpi?.totalProducts || 'Total de Produtos' }}
+                  {{ translate?.kpi?.totalProducts || "Total de Produtos" }}
                 </p>
                 <p class="text-3xl font-bold text-blue-900">
                   {{ kpiData().totalProducts }}
@@ -65,11 +70,15 @@ interface CategoryData {
           </div>
 
           <!-- Total Stock Value -->
-          <div class="card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <div
+            class="card bg-gradient-to-br from-green-50 to-green-100 border-green-200"
+          >
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-green-800">
-                  {{ translate?.kpi?.totalStockValue || 'Valor Total do Estoque' }}
+                  {{
+                    translate?.kpi?.totalStockValue || "Valor Total do Estoque"
+                  }}
                 </p>
                 <p class="text-3xl font-bold text-green-900">
                   &#36;{{ formatNumber(kpiData().totalStockValue) }}
@@ -82,11 +91,15 @@ interface CategoryData {
           </div>
 
           <!-- Average Price -->
-          <div class="card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+          <div
+            class="card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200"
+          >
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-yellow-800">
-                  {{ translate?.kpi?.averagePrice || 'Preço Médio dos Produtos' }}
+                  {{
+                    translate?.kpi?.averagePrice || "Preço Médio dos Produtos"
+                  }}
                 </p>
                 <p class="text-3xl font-bold text-yellow-900">
                   &#36;{{ formatNumber(kpiData().averagePrice) }}
@@ -99,11 +112,16 @@ interface CategoryData {
           </div>
 
           <!-- Unique Categories -->
-          <div class="card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <div
+            class="card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200"
+          >
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-purple-800">
-                  {{ translate?.kpi?.uniqueCategories || 'Número de Categorias Únicas' }}
+                  {{
+                    translate?.kpi?.uniqueCategories ||
+                      "Número de Categorias Únicas"
+                  }}
                 </p>
                 <p class="text-3xl font-bold text-purple-900">
                   {{ kpiData().uniqueCategories }}
@@ -120,25 +138,33 @@ interface CategoryData {
         <div class="card">
           <div class="mb-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-2">
-              {{ translate?.chart?.title || 'Produtos por Categoria' }}
+              {{ translate?.chart?.title || "Produtos por Categoria" }}
             </h2>
             <p class="text-gray-600">
               Distribuição dos produtos por categoria do catálogo
             </p>
           </div>
-          
+
           <!-- Category Bars -->
           <div class="space-y-4">
-            <div *ngFor="let category of categoriesData(); trackBy: trackByCategory" 
-                 class="flex items-center space-x-4">
+            <div
+              *ngFor="
+                let category of categoriesData();
+                trackBy: trackByCategory
+              "
+              class="flex items-center space-x-4"
+            >
               <div class="w-24 text-sm font-medium text-gray-700 truncate">
                 {{ category.name }}
               </div>
               <div class="flex-1 bg-gray-200 rounded-full h-6 relative">
-                <div class="bg-primary-600 h-6 rounded-full transition-all duration-300"
-                     [style.width.%]="category.percentage">
-                </div>
-                <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+                <div
+                  class="bg-primary-600 h-6 rounded-full transition-all duration-300"
+                  [style.width.%]="category.percentage"
+                ></div>
+                <div
+                  class="absolute inset-0 flex items-center justify-center text-xs font-medium text-white"
+                >
                   {{ category.count }} produtos
                 </div>
               </div>
@@ -154,20 +180,18 @@ interface CategoryData {
       <div *ngIf="hasError()" class="text-center py-12">
         <div class="text-red-400 text-6xl mb-4">⚠️</div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">
-          {{ genericTranslate?.error || 'Erro' }}
+          {{ genericTranslate?.error || "Erro" }}
         </h3>
         <p class="text-gray-500">
-          Não foi possível carregar os dados do dashboard. Verifique sua conexão com a internet.
+          Não foi possível carregar os dados do dashboard. Verifique sua conexão
+          com a internet.
         </p>
-        <button 
-          (click)="loadDashboardData()"
-          class="mt-4 btn-primary"
-        >
+        <button (click)="loadDashboardData()" class="mt-4 btn-primary">
           Tentar Novamente
         </button>
       </div>
     </div>
-  `
+  `,
 })
 export class DashboardComponent implements OnInit {
   private productService = inject(ProductService);
@@ -183,32 +207,38 @@ export class DashboardComponent implements OnInit {
   // Computed values
   protected kpiData = computed<KPIData>(() => {
     const products = this.products();
-    
+
     if (products.length === 0) {
       return {
         totalProducts: 0,
         totalStockValue: 0,
         averagePrice: 0,
-        uniqueCategories: 0
+        uniqueCategories: 0,
       };
     }
 
     const totalProducts = products.length;
-    const totalStockValue = products.reduce((sum, product) => sum + (product.price * product.stock), 0);
-    const averagePrice = products.reduce((sum, product) => sum + product.price, 0) / totalProducts;
-    const uniqueCategories = new Set(products.map(product => product.category)).size;
+    const totalStockValue = products.reduce(
+      (sum, product) => sum + product.price * product.stock,
+      0
+    );
+    const averagePrice =
+      products.reduce((sum, product) => sum + product.price, 0) / totalProducts;
+    const uniqueCategories = new Set(
+      products.map((product) => product.category)
+    ).size;
 
     return {
       totalProducts,
       totalStockValue,
       averagePrice,
-      uniqueCategories
+      uniqueCategories,
     };
   });
 
   protected categoriesData = computed<CategoryData[]>(() => {
     const products = this.products();
-    
+
     if (products.length === 0) {
       return [];
     }
@@ -226,7 +256,7 @@ export class DashboardComponent implements OnInit {
       .map(([name, count]) => ({
         name: name.charAt(0).toUpperCase() + name.slice(1),
         count,
-        percentage: Math.round((count / totalProducts) * 100)
+        percentage: Math.round((count / totalProducts) * 100),
       }))
       .sort((a, b) => b.count - a.count);
   });
@@ -243,13 +273,17 @@ export class DashboardComponent implements OnInit {
 
   private async buildTranslate(): Promise<void> {
     try {
-      const dashboardTranslate = await firstValueFrom(this.translateService.get('pages.dashboard'));
-      const genericTranslate = await firstValueFrom(this.translateService.get('generic'));
+      const dashboardTranslate = await firstValueFrom(
+        this.translateService.get("pages.dashboard")
+      );
+      const genericTranslate = await firstValueFrom(
+        this.translateService.get("generic")
+      );
 
       this.translate = dashboardTranslate;
       this.genericTranslate = genericTranslate;
     } catch (error) {
-      console.error('Error loading translations:', error);
+      console.error("Error loading translations:", error);
     }
   }
 
@@ -257,12 +291,13 @@ export class DashboardComponent implements OnInit {
     try {
       this.isLoading.set(true);
       this.hasError.set(false);
-      
-      const products = await firstValueFrom(this.productService.getAllProducts());
+
+      const products = await firstValueFrom(
+        this.productService.getAllProducts()
+      );
       this.products.set(products);
-      
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      console.error("Error loading dashboard data:", error);
       this.hasError.set(true);
     } finally {
       this.isLoading.set(false);
@@ -270,9 +305,9 @@ export class DashboardComponent implements OnInit {
   }
 
   protected formatNumber(value: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(value);
   }
 

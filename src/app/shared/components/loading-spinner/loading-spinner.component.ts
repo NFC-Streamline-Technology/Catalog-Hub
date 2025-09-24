@@ -19,5 +19,5 @@ import { LoadingService } from '../../../core/services/loading.service';
   `
 })
 export class LoadingSpinnerComponent {
-  protected loadingService = inject(LoadingService);
+  protected readonly loadingService = inject(LoadingService);
 }
