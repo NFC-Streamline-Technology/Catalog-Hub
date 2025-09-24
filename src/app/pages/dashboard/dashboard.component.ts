@@ -460,4 +460,32 @@ export class DashboardComponent implements OnInit {
     const total = categories.reduce((sum, cat) => sum + cat.count, 0);
     return Math.round(total / categories.length);
   }
+
+  protected getCircleSegment(percentage: number): number {
+    const circumference = 2 * Math.PI * 40; // 251.2
+    return (percentage / 100) * circumference;
+  }
+
+  protected getCircleOffset(index: number): number {
+    const categories = this.getTopCategories();
+    let offset = 0;
+    for (let i = 0; i < index; i++) {
+      offset += this.getCircleSegment(categories[i].percentage);
+    }
+    return -offset;
+  }
+
+  protected getOtherCategoriesCount(): number {
+    const topCategories = this.getTopCategories();
+    const allCategories = this.categoriesData();
+    const topCategoriesCount = topCategories.reduce((sum, cat) => sum + cat.count, 0);
+    const totalCount = allCategories.reduce((sum, cat) => sum + cat.count, 0);
+    return totalCount - topCategoriesCount;
+  }
+
+  protected getOtherCategoriesPercentage(): number {
+    const topCategories = this.getTopCategories();
+    const topPercentage = topCategories.reduce((sum, cat) => sum + cat.percentage, 0);
+    return Math.max(0, 100 - topPercentage);
+  }
 }
