@@ -116,80 +116,147 @@ interface CategoryData {
           </div>
         </div>
 
-        <!-- Categories Chart Alternative -->
-        <div class="card">
-          <div class="mb-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">
-              {{ translate?.chart?.title || 'Produtos por Categoria' }}
-            </h2>
-            <p class="text-gray-600">
-              Distribuição dos produtos por categoria do catálogo
-            </p>
-          </div>
-          
-          <!-- Top Categories Stats -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            <div *ngFor="let category of getTopCategories(); let i = index" 
-                 class="bg-gradient-to-r p-4 rounded-lg text-white"
-                 [ngStyle]="{'background': getGradientColor(i)}">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm opacity-90">{{ category.name }}</p>
-                  <p class="text-2xl font-bold">{{ category.count }}</p>
-                  <p class="text-xs opacity-75">{{ category.percentage }}% do total</p>
-                </div>
-                <div class="text-2xl opacity-80">
-                  {{ getCategoryIcon(category.name) }}
+        <!-- Categories Visualization -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Categories Donut Chart -->
+          <div class="card">
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold text-gray-900 mb-2">
+                {{ translate?.chart?.title || 'Produtos por Categoria' }}
+              </h2>
+              <p class="text-gray-600 text-sm">
+                Distribuição visual das categorias mais populares
+              </p>
+            </div>
+            
+            <!-- Donut Chart with CSS -->
+            <div class="flex items-center justify-center mb-6">
+              <div class="relative w-64 h-64">
+                <!-- Background Circle -->
+                <svg class="w-64 h-64 transform -rotate-90" viewBox="0 0 100 100">
+                  <!-- Background -->
+                  <circle cx="50" cy="50" r="40" stroke="#f3f4f6" stroke-width="8" fill="none"/>
+                  
+                  <!-- Category Segments -->
+                  <circle *ngFor="let category of getTopCategories(); let i = index"
+                          cx="50" cy="50" r="40" 
+                          [attr.stroke]="getColorForIndex(i)"
+                          stroke-width="8" 
+                          fill="none"
+                          [attr.stroke-dasharray]="getCircleSegment(category.percentage) + ' 251.2'"
+                          [attr.stroke-dashoffset]="getCircleOffset(i)"
+                          class="transition-all duration-1000 ease-out"
+                          style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1))"/>
+                </svg>
+                
+                <!-- Center Text -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900">{{ kpiData().totalProducts }}</div>
+                    <div class="text-xs text-gray-600">Total</div>
+                  </div>
                 </div>
               </div>
             </div>
+            
+            <!-- Legend -->
+            <div class="space-y-2">
+              <div *ngFor="let category of getTopCategories(); let i = index" 
+                   class="flex items-center space-x-3">
+                <div class="w-4 h-4 rounded-full"
+                     [ngStyle]="{'background-color': getColorForIndex(i)}"></div>
+                <span class="text-sm font-medium text-gray-700">{{ category.name }}</span>
+                <span class="text-sm text-gray-500">{{ category.count }} produtos</span>
+                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-auto">
+                  {{ category.percentage }}%
+                </span>
+              </div>
+              <div *ngIf="categoriesData().length > 3" class="flex items-center space-x-3 pt-2 border-t">
+                <div class="w-4 h-4 rounded-full bg-gray-300"></div>
+                <span class="text-sm text-gray-600">Outras categorias</span>
+                <span class="text-sm text-gray-500">{{ getOtherCategoriesCount() }} produtos</span>
+                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-auto">
+                  {{ getOtherCategoriesPercentage() }}%
+                </span>
+              </div>
+            </div>
           </div>
-          
-          <!-- Full Category List with Visual Bars -->
-          <div class="space-y-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Todas as Categorias</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-              <div *ngFor="let category of categoriesData(); let i = index" 
-                   class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                     [ngStyle]="{'background-color': getColorForIndex(i)}">
-                  {{ category.count }}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between mb-1">
-                    <p class="text-sm font-medium text-gray-900 truncate">
-                      {{ category.name }}
-                    </p>
-                    <span class="text-xs text-gray-500">{{ category.percentage }}%</span>
+
+          <!-- Top Categories Cards -->
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Top Categorias</h3>
+              <p class="text-gray-600 text-sm">As 3 categorias com mais produtos</p>
+            </div>
+            
+            <div *ngFor="let category of getTopCategories(); let i = index" 
+                 class="bg-gradient-to-r p-4 rounded-xl text-white shadow-lg transform hover:scale-105 transition-all duration-200"
+                 [ngStyle]="{'background': getGradientColor(i)}">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="flex items-center space-x-2 mb-2">
+                    <span class="text-2xl">{{ getCategoryIcon(category.name) }}</span>
+                    <span class="text-lg font-semibold">{{ category.name }}</span>
                   </div>
-                  <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="h-2 rounded-full transition-all duration-500"
-                         [ngStyle]="{'width.%': category.percentage, 'background-color': getColorForIndex(i)}">
+                  <div class="text-3xl font-bold mb-1">{{ category.count }}</div>
+                  <div class="text-sm opacity-90">{{ category.percentage }}% do catálogo</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs opacity-75 mb-1">#{{ i + 1 }} Posição</div>
+                  <div class="w-16 h-2 bg-white/30 rounded-full">
+                    <div class="h-2 bg-white rounded-full transition-all duration-1000"
+                         [style.width.%]="category.percentage">
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-gray-50 p-4 rounded-xl">
+              <h4 class="font-medium text-gray-900 mb-3">Estatísticas Rápidas</h4>
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="text-center p-2 bg-white rounded-lg">
+                  <div class="font-bold text-blue-600">{{ categoriesData().length }}</div>
+                  <div class="text-gray-600 text-xs">Categorias</div>
+                </div>
+                <div class="text-center p-2 bg-white rounded-lg">
+                  <div class="font-bold text-green-600">{{ getAverageProductsPerCategory() }}</div>
+                  <div class="text-gray-600 text-xs">Média/Cat.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- All Categories Grid -->
+        <div class="card">
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Todas as Categorias</h3>
+            <p class="text-gray-600 text-sm">Visualização completa de todas as categorias do catálogo</p>
           </div>
           
-          <!-- Summary Stats -->
-          <div class="mt-6 pt-4 border-t border-gray-200">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div>
-                <div class="text-2xl font-bold text-blue-600">{{ categoriesData().length }}</div>
-                <div class="text-xs text-gray-600">Total de Categorias</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-96 overflow-y-auto">
+            <div *ngFor="let category of categoriesData(); let i = index" 
+                 class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:shadow-md hover:border-primary-300 transition-all duration-200 group">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md"
+                   [ngStyle]="{'background-color': getColorForIndex(i)}">
+                {{ category.count }}
               </div>
-              <div>
-                <div class="text-2xl font-bold text-green-600">{{ getMostPopularCategory()?.name || '-' }}</div>
-                <div class="text-xs text-gray-600">Mais Popular</div>
-              </div>
-              <div>
-                <div class="text-2xl font-bold text-purple-600">{{ getAverageProductsPerCategory() }}</div>
-                <div class="text-xs text-gray-600">Média por Categoria</div>
-              </div>
-              <div>
-                <div class="text-2xl font-bold text-orange-600">{{ getMostPopularCategory()?.count || 0 }}</div>
-                <div class="text-xs text-gray-600">Produtos na Maior</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <p class="text-sm font-medium text-gray-900 truncate group-hover:text-primary-600">
+                    {{ category.name }}
+                  </p>
+                  <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                    {{ category.percentage }}%
+                  </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="h-2 rounded-full transition-all duration-500 group-hover:shadow-lg"
+                       [ngStyle]="{'width.%': category.percentage, 'background-color': getColorForIndex(i)}">
+                  </div>
+                </div>
               </div>
             </div>
           </div>
