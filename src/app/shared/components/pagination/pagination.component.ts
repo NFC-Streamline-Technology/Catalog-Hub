@@ -59,8 +59,9 @@ import { PaginationState } from '../../models/product.model';
               *ngFor="let page of getVisiblePages()"
               (click)="onPageChange(page)"
               [class]="getPageButtonClass(page)"
+              [disabled]="page === -1"
             >
-              {{ page }}
+              {{ page === -1 ? '...' : page }}
             </button>
 
             <!-- Next button -->
@@ -151,15 +152,15 @@ export class PaginationComponent implements OnInit {
 
   protected getPageButtonClass(page: number): string {
     if (page === -1) {
-      return 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0 cursor-default';
+      return 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 cursor-default';
     }
 
-    const baseClass = 'relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0';
+    const baseClass = 'relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 transition-colors duration-200';
     
     if (page === this.pagination.currentPage) {
       return `${baseClass} z-10 bg-primary-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600`;
     }
     
-    return `${baseClass} text-gray-900`;
+    return `${baseClass} text-gray-900 hover:text-primary-600`;
   }
 }
