@@ -325,4 +325,72 @@ export class DashboardComponent implements OnInit {
   protected trackByCategory(index: number, category: CategoryData): string {
     return category.name;
   }
+
+  protected getTopCategories(): CategoryData[] {
+    return this.categoriesData().slice(0, 3);
+  }
+
+  protected getGradientColor(index: number): string {
+    const gradients = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #30cfd0 0%, #91a7ff 100%)',
+    ];
+    return gradients[index % gradients.length];
+  }
+
+  protected getColorForIndex(index: number): string {
+    const colors = [
+      '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444', 
+      '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1',
+      '#14B8A6', '#F472B6', '#8B5CF6', '#F59E0B', '#10B981'
+    ];
+    return colors[index % colors.length];
+  }
+
+  protected getCategoryIcon(categoryName: string): string {
+    const iconMap: { [key: string]: string } = {
+      'smartphones': '📱',
+      'laptops': '💻',
+      'fragrances': '🌸',
+      'skincare': '🧴',
+      'groceries': '🛒',
+      'home-decoration': '🏠',
+      'furniture': '🪑',
+      'tops': '👕',
+      'womens-dresses': '👗',
+      'womens-shoes': '👠',
+      'mens-shirts': '👔',
+      'mens-shoes': '👞',
+      'mens-watches': '⌚',
+      'womens-watches': '⌚',
+      'womens-bags': '👜',
+      'womens-jewellery': '💎',
+      'sunglasses': '🕶️',
+      'automotive': '🚗',
+      'motorcycle': '🏍️',
+      'lighting': '💡',
+      'kitchen-accessories': '🍳',
+      'sports-accessories': '⚽',
+      'mobile-accessories': '📞',
+      'beauty': '💄',
+      'vehicle': '🚙'
+    };
+    return iconMap[categoryName.toLowerCase()] || '📦';
+  }
+
+  protected getMostPopularCategory(): CategoryData | undefined {
+    const categories = this.categoriesData();
+    return categories.length > 0 ? categories[0] : undefined;
+  }
+
+  protected getAverageProductsPerCategory(): number {
+    const categories = this.categoriesData();
+    if (categories.length === 0) return 0;
+    const total = categories.reduce((sum, cat) => sum + cat.count, 0);
+    return Math.round(total / categories.length);
+  }
 }
