@@ -63,6 +63,14 @@
       "imageFormats": "PNG, JPG, GIF up to 10MB each",
       "addByUrl": "Add by URL",
       "primary": "Primary",
+      "filters": {
+        "filterByCategory": "Filter by category",
+        "allCategories": "All categories",
+        "clearFilters": "Clear Filters",
+        "activeFilters": "Active filters:",
+        "search": "Search",
+        "category": "Category"
+      },
       "fields": {
         "title": "Title",
         "description": "Description",
