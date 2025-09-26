@@ -187,10 +187,13 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
 export class ProductsComponent implements OnInit {
   private productService = inject(ProductService);
   private translateService = inject(TranslateService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   // Signals
   protected products = signal<Product[]>([]);
   protected filteredProducts = signal<Product[]>([]);
+  protected categories = signal<string[]>([]);
   protected showForm = signal(false);
   protected showDeleteConfirm = signal(false);
   protected selectedProduct = signal<Product | null>(null);
@@ -202,11 +205,13 @@ export class ProductsComponent implements OnInit {
     totalPages: 0
   });
 
-  // Search state
-  private currentSearchQuery = '';
+  // Filter state
+  protected currentSearchQuery = '';
+  protected currentCategory = 'all';
 
   // Form controls
   protected searchControl = new FormControl('');
+  protected categoryControl = new FormControl('all');
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
