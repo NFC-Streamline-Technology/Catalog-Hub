@@ -215,13 +215,88 @@ export class ProductsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
-    await this.loadProducts();
-    this.setupSearch();
+    await this.loadCategories();
+    this.initializeFromQueryParams();
+    this.setupFilters();
 
     // Listen for language changes
     this.translateService.onLangChange.subscribe(() => {
       this.buildTranslate();
     });
+  }
+
+  private initializeFromQueryParams(): void {
+    this.route.queryParams.subscribe(params => {
+      const search = params['search'] || '';
+      const category = params['category'] || 'all';
+      const page = parseInt(params['page']) || 1;
+
+      this.currentSearchQuery = search;
+      this.currentCategory = category;
+      
+      this.searchControl.setValue(search, { emitEvent: false });
+      this.categoryControl.setValue(category, { emitEvent: false });
+      
+      this.paginationState.update(state => ({ ...state, currentPage: page }));
+      
+      this.loadProducts();
+    });
+  }
+
+  private setupFilters(): void {
+    // Setup search filter
+    this.searchControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(query => {
+      this.updateFilters({ search: query?.trim() || '' });
+    });
+
+    // Setup category filter
+    this.categoryControl.valueChanges.pipe(
+      startWith('all'),
+      distinctUntilChanged()
+    ).subscribe(category => {
+      this.updateFilters({ category: category || 'all' });
+    });
+  }
+
+  private updateFilters(filters: { search?: string, category?: string }): void {
+    const queryParams: any = {};
+    
+    if (filters.search !== undefined) {
+      this.currentSearchQuery = filters.search;
+      if (filters.search) {
+        queryParams.search = filters.search;
+      }
+    }
+    
+    if (filters.category !== undefined) {
+      this.currentCategory = filters.category;
+      if (filters.category && filters.category !== 'all') {
+        queryParams.category = filters.category;
+      }
+    }
+
+    // Reset to first page when filters change
+    this.paginationState.update(state => ({ ...state, currentPage: 1 }));
+
+    // Update URL with new query parameters
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  private async loadCategories(): Promise<void> {
+    try {
+      const categories = await firstValueFrom(this.productService.getCategories());
+      this.categories.set(categories);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
   }
 
   private async buildTranslate(): Promise<void> {
