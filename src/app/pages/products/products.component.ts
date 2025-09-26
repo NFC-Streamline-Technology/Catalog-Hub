@@ -312,8 +312,11 @@ export class ProductsComponent implements OnInit {
       const pagination = this.paginationState();
       const skip = (pagination.currentPage - 1) * pagination.pageSize;
       
+      const category = this.currentCategory === 'all' ? undefined : this.currentCategory;
+      const searchQuery = this.currentSearchQuery || undefined;
+      
       const response = await firstValueFrom(
-        this.productService.getProducts(this.currentSearchQuery, pagination.pageSize, skip)
+        this.productService.getProducts(searchQuery, category, pagination.pageSize, skip)
       );
       
       this.filteredProducts.set(response.products);
