@@ -430,7 +430,13 @@ export class ProductsComponent implements OnInit {
 
   protected onPageChanged(page: number): void {
     this.paginationState.update(state => ({ ...state, currentPage: page }));
-    this.loadProducts();
+    
+    // Update URL with new page
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page > 1 ? page : null },
+      queryParamsHandling: 'merge'
+    });
   }
 
   protected getStartItem(): number {
@@ -442,5 +448,34 @@ export class ProductsComponent implements OnInit {
     const pagination = this.paginationState();
     const end = pagination.currentPage * pagination.pageSize;
     return Math.min(end, pagination.totalItems);
+  }
+
+  // Filter helper methods
+  protected formatCategoryName(category: string): string {
+    return category
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  protected hasActiveFilters(): boolean {
+    return !!(this.currentSearchQuery || (this.currentCategory && this.currentCategory !== 'all'));
+  }
+
+  protected clearAllFilters(): void {
+    this.searchControl.setValue('');
+    this.categoryControl.setValue('all');
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {}
+    });
+  }
+
+  protected clearSearch(): void {
+    this.searchControl.setValue('');
+  }
+
+  protected clearCategory(): void {
+    this.categoryControl.setValue('all');
   }
 }
