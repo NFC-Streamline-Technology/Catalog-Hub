@@ -63,6 +63,14 @@
       "imageFormats": "PNG, JPG, GIF até 10MB cada",
       "addByUrl": "Adicionar por URL",
       "primary": "Principal",
+      "filters": {
+        "filterByCategory": "Filtrar por categoria",
+        "allCategories": "Todas as categorias",
+        "clearFilters": "Limpar Filtros",
+        "activeFilters": "Filtros ativos:",
+        "search": "Busca",
+        "category": "Categoria"
+      },
       "fields": {
         "title": "Título",
         "description": "Descrição",
