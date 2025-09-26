@@ -54,7 +54,7 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
 
       <!-- Search and Filters -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col lg:flex-row gap-4">
           <div class="flex-1">
             <label class="form-label">Pesquisar produtos</label>
             <div class="relative">
@@ -67,6 +67,48 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-400">🔍</span>
               </div>
+            </div>
+          </div>
+          
+          <div class="w-full lg:w-64">
+            <label class="form-label">Filtrar por categoria</label>
+            <select 
+              [formControl]="categoryControl"
+              class="form-input w-full"
+            >
+              <option value="all">Todas as categorias</option>
+              <option *ngFor="let category of categories()" [value]="category">
+                {{ formatCategoryName(category) }}
+              </option>
+            </select>
+          </div>
+          
+          <!-- Clear Filters -->
+          <div class="flex items-end">
+            <button 
+              *ngIf="hasActiveFilters()"
+              (click)="clearAllFilters()"
+              class="btn-secondary flex items-center space-x-2"
+            >
+              <span>🗑️</span>
+              <span>Limpar Filtros</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Active Filters Display -->
+        <div *ngIf="hasActiveFilters()" class="mt-4 pt-4 border-t border-gray-200">
+          <div class="flex flex-wrap gap-2">
+            <span class="text-sm text-gray-600">Filtros ativos:</span>
+            <div *ngIf="currentSearchQuery" 
+                 class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              Busca: "{{ currentSearchQuery }}"
+              <button (click)="clearSearch()" class="ml-2 text-blue-600 hover:text-blue-800">×</button>
+            </div>
+            <div *ngIf="currentCategory && currentCategory !== 'all'" 
+                 class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              Categoria: {{ formatCategoryName(currentCategory) }}
+              <button (click)="clearCategory()" class="ml-2 text-green-600 hover:text-green-800">×</button>
             </div>
           </div>
         </div>
