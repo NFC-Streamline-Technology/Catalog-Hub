@@ -1,8 +1,9 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { debounceTime, distinctUntilChanged, switchMap, startWith } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, startWith, combineLatest } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 
 import { Product, PaginationState } from '../../shared/models/product.model';
