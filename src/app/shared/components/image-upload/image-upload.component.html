@@ -99,7 +99,7 @@
   <!-- URL Input for manual addition -->
   <fieldset class="mt-4">
     <label class="form-label text-sm">
-      {{ translate?.addByUrl || "Adicionar por URL" }}
+      {{ translate?.addByUrl }}
     </label>
     <div class="flex space-x-2">
       <input
@@ -114,7 +114,7 @@
         (click)="addImageByUrl(urlInput.value); urlInput.value = ''"
         class="btn-secondary"
       >
-        {{ translate?.add || "Adicionar" }}
+        {{ translate?.generic?.add }}
       </button>
     </div>
   </fieldset>

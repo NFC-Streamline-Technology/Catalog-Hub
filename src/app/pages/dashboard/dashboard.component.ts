@@ -31,19 +31,14 @@ interface CategoryData {
           {{ translate?.title || "Dashboard" }}
         </h1>
         <p class="text-gray-600 mt-1">
-          {{
-            translate?.subtitle ||
-              "Visão geral dos seus produtos e estatísticas"
-          }}
+          {{ translate?.subtitle }}
         </p>
       </div>
 
       <!-- Loading State -->
       <div *ngIf="isLoading()" class="flex justify-center items-center py-12">
         <div class="spinner w-8 h-8"></div>
-        <span class="ml-2 text-gray-600">{{
-          genericTranslate?.loading || "Carregando..."
-        }}</span>
+        <span class="ml-2 text-gray-600">{{ genericTranslate?.loading }}</span>
       </div>
 
       <!-- Dashboard Content -->
@@ -57,7 +52,7 @@ interface CategoryData {
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-blue-800">
-                  {{ translate?.kpi?.totalProducts || "Total de Produtos" }}
+                  {{ translate?.kpi?.totalProducts }}
                 </p>
                 <p class="text-3xl font-bold text-blue-900">
                   {{ kpiData().totalProducts }}
@@ -76,9 +71,7 @@ interface CategoryData {
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-green-800">
-                  {{
-                    translate?.kpi?.totalStockValue || "Valor Total do Estoque"
-                  }}
+                  {{ translate?.kpi?.totalStockValue }}
                 </p>
                 <p class="text-3xl font-bold text-green-900">
                   &#36;{{ formatNumber(kpiData().totalStockValue) }}
@@ -97,9 +90,7 @@ interface CategoryData {
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-yellow-800">
-                  {{
-                    translate?.kpi?.averagePrice || "Preço Médio dos Produtos"
-                  }}
+                  {{ translate?.kpi?.averagePrice }}
                 </p>
                 <p class="text-3xl font-bold text-yellow-900">
                   &#36;{{ formatNumber(kpiData().averagePrice) }}
@@ -118,10 +109,7 @@ interface CategoryData {
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-purple-800">
-                  {{
-                    translate?.kpi?.uniqueCategories ||
-                      "Número de Categorias Únicas"
-                  }}
+                  {{ translate?.kpi?.uniqueCategories }}
                 </p>
                 <p class="text-3xl font-bold text-purple-900">
                   {{ kpiData().uniqueCategories }}
@@ -140,10 +128,10 @@ interface CategoryData {
           <div class="card">
             <div class="mb-6">
               <h2 class="text-xl font-semibold text-gray-900 mb-2">
-                {{ translate?.chart?.title || "Produtos por Categoria" }}
+                {{ translate?.chart?.title }}
               </h2>
               <p class="text-gray-600 text-sm">
-                Distribuição visual das categorias mais populares
+                {{ translate?.chart?.subtitle }}
               </p>
             </div>
 
@@ -189,7 +177,9 @@ interface CategoryData {
                     <div class="text-2xl font-bold text-gray-900">
                       {{ kpiData().totalProducts }}
                     </div>
-                    <div class="text-xs text-gray-600">Total</div>
+                    <div class="text-xs text-gray-600">
+                      {{ translate?.chart?.total }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -209,7 +199,7 @@ interface CategoryData {
                   category.name
                 }}</span>
                 <span class="text-sm text-gray-500"
-                  >{{ category.count }} produtos</span
+                  >{{ category.count }} {{ translate?.chart?.products }}</span
                 >
                 <span
                   class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-auto"
@@ -222,9 +212,12 @@ interface CategoryData {
                 class="flex items-center space-x-3 pt-2 border-t"
               >
                 <div class="w-4 h-4 rounded-full bg-gray-300"></div>
-                <span class="text-sm text-gray-600">Outras categorias</span>
+                <span class="text-sm text-gray-600">{{
+                  translate?.chart?.otherCategories
+                }}</span>
                 <span class="text-sm text-gray-500"
-                  >{{ getOtherCategoriesCount() }} produtos</span
+                  >{{ getOtherCategoriesCount() }}
+                  {{ translate?.chart?.products }}</span
                 >
                 <span
                   class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-auto"
@@ -239,10 +232,10 @@ interface CategoryData {
           <div class="space-y-4">
             <div class="mb-4">
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                Top Categorias
+                {{ translate?.topCategories?.title }}
               </h3>
               <p class="text-gray-600 text-sm">
-                As 3 categorias com mais produtos
+                {{ translate?.topCategories?.subtitle }}
               </p>
             </div>
 
@@ -265,12 +258,13 @@ interface CategoryData {
                     {{ category.count }}
                   </div>
                   <div class="text-sm opacity-90">
-                    {{ category.percentage }}% do catálogo
+                    {{ category.percentage }}%
+                    {{ translate?.topCategories?.ofCatalog }}
                   </div>
                 </div>
                 <div class="text-right">
                   <div class="text-xs opacity-75 mb-1">
-                    #{{ i + 1 }} Posição
+                    #{{ i + 1 }} {{ translate?.topCategories?.position }}
                   </div>
                   <div class="w-16 h-2 bg-white/30 rounded-full">
                     <div
@@ -285,20 +279,24 @@ interface CategoryData {
             <!-- Quick Stats -->
             <div class="bg-gray-50 p-4 rounded-xl">
               <h4 class="font-medium text-gray-900 mb-3">
-                Estatísticas Rápidas
+                {{ translate?.quickStats?.title }}
               </h4>
               <div class="grid grid-cols-2 gap-3 text-sm">
                 <div class="text-center p-2 bg-white rounded-lg">
                   <div class="font-bold text-blue-600">
                     {{ categoriesData().length }}
                   </div>
-                  <div class="text-gray-600 text-xs">Categorias</div>
+                  <div class="text-gray-600 text-xs">
+                    {{ translate?.quickStats?.categories }}
+                  </div>
                 </div>
                 <div class="text-center p-2 bg-white rounded-lg">
                   <div class="font-bold text-green-600">
                     {{ getAverageProductsPerCategory() }}
                   </div>
-                  <div class="text-gray-600 text-xs">Média/Cat.</div>
+                  <div class="text-gray-600 text-xs">
+                    {{ translate?.quickStats?.avgPerCategory }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -309,10 +307,10 @@ interface CategoryData {
         <div class="card">
           <div class="mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-2">
-              Todas as Categorias
+              {{ translate?.allCategories?.title }}
             </h3>
             <p class="text-gray-600 text-sm">
-              Visualização completa de todas as categorias do catálogo
+              {{ translate?.allCategories?.subtitle }}
             </p>
           </div>
 
@@ -361,14 +359,13 @@ interface CategoryData {
       <div *ngIf="hasError()" class="text-center py-12">
         <div class="text-red-400 text-6xl mb-4">⚠️</div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">
-          {{ genericTranslate?.error || "Erro" }}
+          {{ genericTranslate?.error }}
         </h3>
         <p class="text-gray-500">
-          Não foi possível carregar os dados do dashboard. Verifique sua conexão
-          com a internet.
+          {{ translate?.error?.message }}
         </p>
         <button (click)="loadDashboardData()" class="mt-4 btn-primary">
-          Tentar Novamente
+          {{ genericTranslate?.retry }}
         </button>
       </div>
     </div>

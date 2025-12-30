@@ -204,15 +204,27 @@ export class ProductCardComponent implements OnInit {
   }
 
   protected getStockText(): string {
+    const translate = this.translate?.stockStatus;
     const stock = this.product.stock;
+
     const stockConfig = [
-      { condition: stock === 0, text: "Esgotado" }, // TODO: Use translation
-      { condition: stock === 1, text: `${stock} restante` },
-      { condition: stock <= 10, text: `${stock} restantes` },
-      { condition: stock >= 100, text: `+99 em estoque` },
-      { condition: true, text: `${stock} em estoque` }
+      { condition: stock === 0, text: translate?.outOfStock },
+      {
+        condition: stock === 1,
+        text: translate?.inStockSingle?.replace("{{stock}}", stock.toString()),
+      },
+      {
+        condition: stock <= 10,
+        text: translate?.lowStock?.replace("{{stock}}", stock.toString()),
+      },
+      { condition: stock >= 100, text: translate?.inStockPlus },
+      {
+        condition: stock > 10 && stock < 100,
+        text: translate?.inStock?.replace("{{stock}}", stock.toString()),
+      },
     ];
-    
-    return stockConfig.find(config => config.condition)!.text;
+
+    const match = stockConfig.find((config): boolean => config.condition);
+    return match?.text ?? "";
   }
 }

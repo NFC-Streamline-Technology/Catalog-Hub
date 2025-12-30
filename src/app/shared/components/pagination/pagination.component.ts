@@ -27,27 +27,27 @@ import { PaginationState } from "../../models/product.model";
           [disabled]="pagination.currentPage === 1"
           class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {{ translate?.previous || "Anterior" }}
+          {{ translate?.previous }}
         </button>
         <button
           (click)="onPageChange(pagination.currentPage + 1)"
           [disabled]="pagination.currentPage === pagination.totalPages"
           class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {{ translate?.next || "Próximo" }}
+          {{ translate?.next }}
         </button>
       </div>
 
       <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p class="text-sm text-gray-700">
-            {{ translate?.showing || "Mostrando" }}
+            {{ translate?.showing }}
             <span class="font-medium">{{ getStartItem() }}</span>
-            {{ translate?.to || "a" }}
+            {{ translate?.to }}
             <span class="font-medium">{{ getEndItem() }}</span>
-            {{ translate?.of || "de" }}
+            {{ translate?.of }}
             <span class="font-medium">{{ pagination.totalItems }}</span>
-            {{ translate?.results || "resultados" }}
+            {{ translate?.results }}
           </p>
         </div>
         <div>
@@ -62,7 +62,7 @@ import { PaginationState } from "../../models/product.model";
               class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span class="sr-only">{{
-                translate?.previous || "Anterior"
+                translate?.previous
               }}</span>
               <svg
                 class="h-5 w-5"
@@ -94,7 +94,7 @@ import { PaginationState } from "../../models/product.model";
               [disabled]="pagination.currentPage === pagination.totalPages"
               class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span class="sr-only">{{ translate?.next || "Próximo" }}</span>
+              <span class="sr-only">{{ translate?.next }}</span>
               <svg
                 class="h-5 w-5"
                 viewBox="0 0 20 20"

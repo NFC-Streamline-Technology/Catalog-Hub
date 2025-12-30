@@ -37,32 +37,29 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
         >
           <div>
             <h1 class="text-3xl font-bold text-gray-900">
-              {{ translate?.title || "Catálogo de Produtos" }}
+              {{ translate?.title }}
             </h1>
             <p class="text-gray-600 mt-1">
-              {{
-                translate?.subtitle ||
-                  "Gerencie seus produtos de forma simples e eficiente"
-              }}
+              {{ translate?.subtitle }}
             </p>
             <div class="flex items-center space-x-4 mt-3 text-sm text-gray-500">
-              <span
-                >Total:
-                <strong class="text-gray-900">{{
-                  paginationState().totalItems
-                }}</strong>
-                produtos</span
-              >
-              <span
-                >Página
-                <strong class="text-gray-900">{{
-                  paginationState().currentPage
-                }}</strong>
-                de
-                <strong class="text-gray-900">{{
-                  paginationState().totalPages
-                }}</strong></span
-              >
+              <span>
+                {{ translate?.total }}:
+                <strong class="text-gray-900">
+                  {{ paginationState().totalItems }}
+                </strong>
+                {{ translate?.products }}
+              </span>
+              <span>
+                {{ translate?.page }}
+                <strong class="text-gray-900">
+                  {{ paginationState().currentPage }}
+                </strong>
+                {{ translate?.of }}
+                <strong class="text-gray-900">
+                  {{ paginationState().totalPages }}
+                </strong>
+              </span>
             </div>
           </div>
 
@@ -71,7 +68,7 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
             (click)="openCreateForm()"
           >
             <span>➕</span>
-            <span>{{ translate?.createProduct || "Criar Produto" }}</span>
+            <span>{{ translate?.createProduct }}</span>
           </button>
         </div>
       </div>
@@ -80,14 +77,12 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
-            <label class="form-label">Pesquisar produtos</label>
+            <label class="form-label">{{ translate?.search }}</label>
             <div class="relative">
               <input
                 type="text"
                 [formControl]="searchControl"
-                [placeholder]="
-                  translate?.searchPlaceholder || 'Pesquisar produtos...'
-                "
+                [placeholder]="translate?.searchPlaceholder"
                 class="form-input w-full pl-10"
               />
               <div
@@ -105,11 +100,12 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
         <!-- Results Summary -->
         <div class="flex items-center justify-between mb-6">
           <p class="text-gray-600">
-            Mostrando {{ getStartItem() }} - {{ getEndItem() }} de
-            {{ paginationState().totalItems }} produtos
+            {{ translate?.showing }} {{ getStartItem() }} - {{ getEndItem() }}
+            {{ translate?.of }} {{ paginationState().totalItems }}
+            {{ translate?.products }}
           </p>
           <div class="text-sm text-gray-500">
-            {{ filteredProducts().length }} produtos na página atual
+            {{ filteredProducts().length }} {{ translate?.productsOnPage }}
           </div>
         </div>
 
@@ -124,15 +120,16 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
             [product]="product"
             (edit)="openEditForm(product)"
             (delete)="openDeleteConfirm(product)"
-          ></app-product-card>
+          />
         </div>
 
         <!-- Pagination -->
+        <!-- When the application language changes, this app-pagination component is destroyed and recreated by Angular so that all labels reflect the current locale. -->
         <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
           <app-pagination
             [pagination]="paginationState()"
             (pageChanged)="onPageChanged($event)"
-          ></app-pagination>
+          />
         </div>
       </div>
 
@@ -141,15 +138,14 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
           <div class="text-center">
             <div class="text-gray-300 text-8xl mb-6">📦</div>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">
-              {{ translate?.noProducts || "Nenhum produto encontrado" }}
+              {{ translate?.noProducts }}
             </h3>
             <p class="text-gray-600 mb-6">
-              Tente ajustar os termos de busca ou criar um novo produto para
-              começar.
+              {{ translate?.noProductsDescription }}
             </p>
             <button class="btn-primary" (click)="openCreateForm()">
               <span class="mr-2">➕</span>
-              {{ translate?.createProduct || "Criar Primeiro Produto" }}
+              {{ translate?.createFirstProduct }}
             </button>
           </div>
         </div>
@@ -162,18 +158,15 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
         [isVisible]="showForm()"
         (saved)="onProductSaved($event)"
         (cancelled)="onFormCancelled()"
-      ></app-product-form>
+      />
 
       <!-- Delete Confirmation Dialog -->
       <app-confirm-dialog
         [isVisible]="showDeleteConfirm()"
-        [message]="
-          translate?.deleteConfirm ||
-          'Tem certeza que deseja excluir este produto?'
-        "
+        [message]="translate?.deleteConfirm"
         (confirmed)="onDeleteConfirmed()"
         (cancelled)="onDeleteCancelled()"
-      ></app-confirm-dialog>
+      />
     </div>
   `,
 })

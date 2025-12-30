@@ -17,7 +17,8 @@
     "required": "Campo obrigatório",
     "invalid": "Campo inválido",
     "add": "Adicionar",
-    "optional": "opcional"
+    "optional": "opcional",
+    "retry": "Tentar Novamente"
   },
   "pagination": {
     "previous": "Anterior",
@@ -42,8 +43,30 @@
       },
       "chart": {
         "title": "Produtos por Categoria",
+        "subtitle": "Distribuição visual das categorias mais populares",
         "xAxisLabel": "Categoria",
-        "yAxisLabel": "Quantidade"
+        "yAxisLabel": "Quantidade",
+        "total": "Total",
+        "products": "produtos",
+        "otherCategories": "Outras categorias"
+      },
+      "topCategories": {
+        "title": "Top Categorias",
+        "subtitle": "As 3 categorias com mais produtos",
+        "ofCatalog": "do catálogo",
+        "position": "Posição"
+      },
+      "quickStats": {
+        "title": "Estatísticas Rápidas",
+        "categories": "Categorias",
+        "avgPerCategory": "Média/Cat."
+      },
+      "allCategories": {
+        "title": "Todas as Categorias",
+        "subtitle": "Visualização completa de todas as categorias do catálogo"
+      },
+      "error": {
+        "message": "Não foi possível carregar os dados do dashboard. Verifique sua conexão com a internet."
       }
     },
     "products": {
@@ -51,7 +74,9 @@
       "subtitle": "Gerencie seus produtos de forma simples e eficiente",
       "searchPlaceholder": "Pesquisar produtos...",
       "noProducts": "Nenhum produto encontrado",
+      "noProductsDescription": "Tente ajustar os termos de busca ou criar um novo produto para começar.",
       "createProduct": "Criar Produto",
+      "createFirstProduct": "Criar Primeiro Produto",
       "editProduct": "Editar Produto",
       "deleteConfirm": "Tem certeza que deseja excluir este produto?",
       "productCreated": "Produto criado com sucesso!",
@@ -63,13 +88,28 @@
       "imageFormats": "PNG, JPG, GIF até 10MB cada",
       "addByUrl": "Adicionar por URL",
       "primary": "Principal",
+      "total": "Total",
+      "products": "produtos",
+      "page": "Página",
+      "of": "de",
+      "search": "Pesquisar produtos",
+      "showing": "Mostrando",
+      "productsOnPage": "produtos na página atual",
       "fields": {
         "title": "Título",
         "description": "Descrição",
         "price": "Preço",
         "category": "Categoria",
         "brand": "Marca",
-        "stock": "Estoque"
+        "stock": "Estoque",
+        "selectCategory": "Selecione uma categoria"
+      },
+      "stockStatus": {
+        "outOfStock": "Esgotado",
+        "inStockSingle": "{{stock}} restante",
+        "lowStock": "{{stock}} restantes",
+        "inStockPlus": "+99 em estoque",
+        "inStock": "{{stock}} em estoque"
       },
       "validation": {
         "titleRequired": "Título é obrigatório",

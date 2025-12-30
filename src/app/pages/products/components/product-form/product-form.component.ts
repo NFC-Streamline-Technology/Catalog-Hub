@@ -229,7 +229,9 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
                     productForm.get('category')?.touched
                   "
                 >
-                  <option value="">Selecione uma categoria</option>
+                  <option value="">
+                    {{ translate?.fields?.selectCategory }}
+                  </option>
                   <option
                     *ngFor="let category of categories()"
                     [value]="category"
