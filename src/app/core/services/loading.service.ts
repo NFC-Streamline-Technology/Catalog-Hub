@@ -7,14 +7,13 @@ export class LoadingService {
   private readonly _loading = signal(false);
   private readonly _loadingCount = signal(0);
 
-  // Public readonly signal
   public readonly loading = this._loading.asReadonly();
 
   /**
    * Show loading spinner
    */
   public show(): void {
-    this._loadingCount.update((count) => count + 1);
+    this._loadingCount.update((count): number => count + 1);
     this._loading.set(true);
   }
 
@@ -22,7 +21,7 @@ export class LoadingService {
    * Hide loading spinner
    */
   public hide(): void {
-    this._loadingCount.update((count) => {
+    this._loadingCount.update((count): number => {
       const newCount = Math.max(0, count - 1);
       if (newCount === 0) {
         this._loading.set(false);

@@ -31,7 +31,7 @@ export class ProductService {
     }
 
     return this.http.get<ProductsResponse>(url).pipe(
-      catchError((error) => {
+      catchError((error): Observable<ProductsResponse> => {
         console.error("Error fetching products:", error);
         return of({ products: [], total: 0, skip: 0, limit: 0 });
       })
@@ -43,7 +43,7 @@ export class ProductService {
    */
   public getProduct(id: number): Observable<Product | null> {
     return this.http.get<Product>(`${this.baseUrl}/products/${id}`).pipe(
-      catchError((error) => {
+      catchError((error): Observable<null> => {
         console.error("Error fetching product:", error);
         return of(null);
       })
@@ -60,7 +60,7 @@ export class ProductService {
     return this.http
       .post<Product>(`${this.baseUrl}/products/add`, product)
       .pipe(
-        catchError((error) => {
+        catchError((error): Observable<null> => {
           console.error("Error creating product:", error);
           return of(null);
         })
@@ -77,7 +77,7 @@ export class ProductService {
     return this.http
       .put<Product>(`${this.baseUrl}/products/${product.id}`, product)
       .pipe(
-        catchError((error) => {
+        catchError((error): Observable<null> => {
           console.error("Error updating product:", error);
           return of(null);
         })
@@ -90,8 +90,8 @@ export class ProductService {
    */
   public deleteProduct(id: number): Observable<boolean> {
     return this.http.delete<Product>(`${this.baseUrl}/products/${id}`).pipe(
-      map(() => true),
-      catchError((error) => {
+      map((): boolean => true),
+      catchError((error): Observable<boolean> => {
         console.error("Error deleting product:", error);
         return of(false);
       })
@@ -105,8 +105,8 @@ export class ProductService {
     return this.http
       .get<ProductsResponse>(`${this.baseUrl}/products?limit=0`)
       .pipe(
-        map((response) => response.products),
-        catchError((error) => {
+        map((response): Product[] => response.products),
+        catchError((error): Observable<Product[]> => {
           console.error("Error fetching all products:", error);
           return of([]);
         })
@@ -118,7 +118,7 @@ export class ProductService {
    */
   public getCategories(): Observable<string[]> {
     return this.http.get<string[]>(`${this.baseUrl}/products/categories`).pipe(
-      catchError((error) => {
+      catchError((error): Observable<string[]> => {
         console.error("Error fetching categories:", error);
         return of([]);
       })

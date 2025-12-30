@@ -1,14 +1,17 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
-import { LoadingService } from '../../../core/services/loading.service';
+import { LoadingService } from "../../../core/services/loading.service";
 
 @Component({
-  selector: 'app-loading-spinner',
+  selector: "app-loading-spinner",
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="loadingService.loading()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25">
+    <div
+      *ngIf="loadingService.loading()"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25"
+    >
       <div class="bg-white rounded-lg p-6 shadow-xl">
         <div class="flex items-center space-x-3">
           <div class="spinner w-6 h-6"></div>
@@ -16,7 +19,7 @@ import { LoadingService } from '../../../core/services/loading.service';
         </div>
       </div>
     </div>
-  `
+  `,
 })
 export class LoadingSpinnerComponent {
   protected readonly loadingService = inject(LoadingService);

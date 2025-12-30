@@ -32,26 +32,46 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
     <div class="space-y-8">
       <!-- Header -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
           <div>
             <h1 class="text-3xl font-bold text-gray-900">
-              {{ translate?.title || 'Catálogo de Produtos' }}
+              {{ translate?.title || "Catálogo de Produtos" }}
             </h1>
             <p class="text-gray-600 mt-1">
-              {{ translate?.subtitle || 'Gerencie seus produtos de forma simples e eficiente' }}
+              {{
+                translate?.subtitle ||
+                  "Gerencie seus produtos de forma simples e eficiente"
+              }}
             </p>
             <div class="flex items-center space-x-4 mt-3 text-sm text-gray-500">
-              <span>Total: <strong class="text-gray-900">{{ paginationState().totalItems }}</strong> produtos</span>
-              <span>Página <strong class="text-gray-900">{{ paginationState().currentPage }}</strong> de <strong class="text-gray-900">{{ paginationState().totalPages }}</strong></span>
+              <span
+                >Total:
+                <strong class="text-gray-900">{{
+                  paginationState().totalItems
+                }}</strong>
+                produtos</span
+              >
+              <span
+                >Página
+                <strong class="text-gray-900">{{
+                  paginationState().currentPage
+                }}</strong>
+                de
+                <strong class="text-gray-900">{{
+                  paginationState().totalPages
+                }}</strong></span
+              >
             </div>
           </div>
-          
-          <button 
+
+          <button
             class="btn-primary flex items-center space-x-2"
             (click)="openCreateForm()"
           >
             <span>➕</span>
-            <span>{{ translate?.createProduct || 'Criar Produto' }}</span>
+            <span>{{ translate?.createProduct || "Criar Produto" }}</span>
           </button>
         </div>
       </div>
@@ -65,10 +85,14 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
               <input
                 type="text"
                 [formControl]="searchControl"
-                [placeholder]="translate?.searchPlaceholder || 'Pesquisar produtos...'"
+                [placeholder]="
+                  translate?.searchPlaceholder || 'Pesquisar produtos...'
+                "
                 class="form-input w-full pl-10"
               />
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
                 <span class="text-gray-400">🔍</span>
               </div>
             </div>
@@ -81,14 +105,17 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
         <!-- Results Summary -->
         <div class="flex items-center justify-between mb-6">
           <p class="text-gray-600">
-            Mostrando {{ getStartItem() }} - {{ getEndItem() }} de {{ paginationState().totalItems }} produtos
+            Mostrando {{ getStartItem() }} - {{ getEndItem() }} de
+            {{ paginationState().totalItems }} produtos
           </p>
           <div class="text-sm text-gray-500">
             {{ filteredProducts().length }} produtos na página atual
           </div>
         </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
           <app-product-card
             *ngFor="
               let product of filteredProducts();
@@ -108,23 +135,21 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
           ></app-pagination>
         </div>
       </div>
-      
+
       <ng-template #noProducts>
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
           <div class="text-center">
             <div class="text-gray-300 text-8xl mb-6">📦</div>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">
-              {{ translate?.noProducts || 'Nenhum produto encontrado' }}
+              {{ translate?.noProducts || "Nenhum produto encontrado" }}
             </h3>
             <p class="text-gray-600 mb-6">
-              Tente ajustar os termos de busca ou criar um novo produto para começar.
+              Tente ajustar os termos de busca ou criar um novo produto para
+              começar.
             </p>
-            <button 
-              class="btn-primary"
-              (click)="openCreateForm()"
-            >
+            <button class="btn-primary" (click)="openCreateForm()">
               <span class="mr-2">➕</span>
-              {{ translate?.createProduct || 'Criar Primeiro Produto' }}
+              {{ translate?.createProduct || "Criar Primeiro Produto" }}
             </button>
           </div>
         </div>

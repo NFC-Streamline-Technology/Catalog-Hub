@@ -17,33 +17,39 @@ import { Product } from "../../../../shared/models/product.model";
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="card hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+    <div
+      class="card hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group"
+    >
       <!-- Product Image -->
       <div class="relative overflow-hidden rounded-lg mb-4">
         <div *ngIf="product.thumbnail; else noImage">
-          <img 
-            [src]="product.thumbnail" 
+          <img
+            [src]="product.thumbnail"
             [alt]="product.title"
             class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
             (error)="onImageError($event)"
           />
         </div>
         <ng-template #noImage>
-          <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+          <div
+            class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+          >
             <span class="text-gray-400 text-4xl">📦</span>
           </div>
         </ng-template>
-        
+
         <!-- Stock Badge -->
         <div class="absolute top-2 right-2">
           <span [class]="getStockBadgeClass()">
             {{ getStockText() }}
           </span>
         </div>
-        
+
         <!-- Discount Badge -->
-        <div *ngIf="product.discountPercentage && product.discountPercentage > 0" 
-             class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+        <div
+          *ngIf="product.discountPercentage && product.discountPercentage > 0"
+          class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+        >
           -{{ product.discountPercentage.toFixed(0) }}%
         </div>
       </div>
@@ -53,12 +59,19 @@ import { Product } from "../../../../shared/models/product.model";
         <!-- Title and Category -->
         <div>
           <div class="flex items-center justify-between mb-1">
-            <span class="text-xs font-medium text-primary-600 uppercase tracking-wide">
+            <span
+              class="text-xs font-medium text-primary-600 uppercase tracking-wide"
+            >
               {{ product.category }}
             </span>
-            <div *ngIf="product.rating && product.rating > 0" class="flex items-center space-x-1">
+            <div
+              *ngIf="product.rating && product.rating > 0"
+              class="flex items-center space-x-1"
+            >
               <span class="text-yellow-400">⭐</span>
-              <span class="text-xs text-gray-600">{{ product.rating.toFixed(1) }}</span>
+              <span class="text-xs text-gray-600">{{
+                product.rating.toFixed(1)
+              }}</span>
             </div>
           </div>
           <h3 class="font-semibold text-gray-900 line-clamp-2 text-lg">
@@ -71,7 +84,9 @@ import { Product } from "../../../../shared/models/product.model";
 
         <!-- Brand -->
         <div *ngIf="product.brand" class="flex items-center space-x-2">
-          <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+          <span
+            class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
+          >
             {{ product.brand }}
           </span>
         </div>
@@ -83,9 +98,15 @@ import { Product } from "../../../../shared/models/product.model";
               <span class="text-2xl font-bold text-gray-900">
                 {{ getPriceDisplay(product.price) }}
               </span>
-              <span *ngIf="product.discountPercentage && product.discountPercentage > 0" 
-                    class="text-sm text-gray-500 line-through">
-                {{ getOriginalPrice(product.price, product.discountPercentage) }}
+              <span
+                *ngIf="
+                  product.discountPercentage && product.discountPercentage > 0
+                "
+                class="text-sm text-gray-500 line-through"
+              >
+                {{
+                  getOriginalPrice(product.price, product.discountPercentage)
+                }}
               </span>
             </div>
           </div>
@@ -93,19 +114,19 @@ import { Product } from "../../../../shared/models/product.model";
 
         <!-- Actions -->
         <div class="flex space-x-2 pt-3 border-t border-gray-100">
-          <button 
+          <button
             class="btn-secondary flex-1 text-sm transition-all duration-200 hover:scale-105"
             (click)="onEdit()"
           >
             <span class="mr-1">✏️</span>
-            {{ translate?.generic?.edit || 'Editar' }}
+            {{ translate?.generic?.edit || "Editar" }}
           </button>
-          <button 
+          <button
             class="btn-danger flex-1 text-sm transition-all duration-200 hover:scale-105"
             (click)="onDelete()"
           >
             <span class="mr-1">🗑️</span>
-            {{ translate?.generic?.delete || 'Excluir' }}
+            {{ translate?.generic?.delete || "Excluir" }}
           </button>
         </div>
       </div>
@@ -163,7 +184,10 @@ export class ProductCardComponent implements OnInit {
     return `$${price.toFixed(2)}`;
   }
 
-  protected getOriginalPrice(price: number, discountPercentage: number): string {
+  protected getOriginalPrice(
+    price: number,
+    discountPercentage: number
+  ): string {
     const originalPrice = price / (1 - discountPercentage / 100);
     return `$${originalPrice.toFixed(2)}`;
   }
@@ -171,22 +195,24 @@ export class ProductCardComponent implements OnInit {
   protected getStockBadgeClass(): string {
     const stock = this.product.stock;
     if (stock === 0) {
-      return 'bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full';
+      return "bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full";
     } else if (stock <= 10) {
-      return 'bg-yellow-500 text-white text-xs font-medium px-2 py-1 rounded-full';
+      return "bg-yellow-500 text-white text-xs font-medium px-2 py-1 rounded-full";
     } else {
-      return 'bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full';
+      return "bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full";
     }
   }
 
   protected getStockText(): string {
     const stock = this.product.stock;
-    if (stock === 0) {
-      return 'Esgotado';
-    } else if (stock <= 10) {
-      return `${stock} restantes`;
-    } else {
-      return `${stock} em estoque`;
-    }
+    const stockConfig = [
+      { condition: stock === 0, text: "Esgotado" }, // TODO: Use translation
+      { condition: stock === 1, text: `${stock} restante` },
+      { condition: stock <= 10, text: `${stock} restantes` },
+      { condition: stock >= 100, text: `+99 em estoque` },
+      { condition: true, text: `${stock} em estoque` }
+    ];
+    
+    return stockConfig.find(config => config.condition)!.text;
   }
 }
