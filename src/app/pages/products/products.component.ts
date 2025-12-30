@@ -10,7 +10,11 @@ import {
 } from "rxjs/operators";
 import { firstValueFrom } from "rxjs";
 
-import { Product, PaginationState } from "../../shared/models/product.model";
+import {
+  Product,
+  PaginationState,
+  ProductsResponse,
+} from "../../shared/models/product.model";
 import { ProductService } from "../../core/services/product.service";
 import { ProductFormComponent } from "./components/product-form/product-form.component";
 import { ProductCardComponent } from "./components/product-card/product-card.component";
@@ -163,7 +167,7 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
       <!-- Delete Confirmation Dialog -->
       <app-confirm-dialog
         [isVisible]="showDeleteConfirm()"
-        [message]="translate?.deleteConfirm"
+        [message]="translate?.deleteConfirm ?? ''"
         (confirmed)="onDeleteConfirmed()"
         (cancelled)="onDeleteCancelled()"
       />
@@ -177,8 +181,8 @@ export class ProductsComponent implements OnInit {
   // Signals
   protected products = signal<Product[]>([]);
   protected filteredProducts = signal<Product[]>([]);
-  protected showForm = signal(false);
-  protected showDeleteConfirm = signal(false);
+  protected showForm = signal<boolean>(false);
+  protected showDeleteConfirm = signal<boolean>(false);
   protected selectedProduct = signal<Product | null>(null);
   protected translate: any;
   protected paginationState = signal<PaginationState>({
@@ -215,10 +219,10 @@ export class ProductsComponent implements OnInit {
 
   private async loadProducts(): Promise<void> {
     try {
-      const pagination = this.paginationState();
-      const skip = (pagination.currentPage - 1) * pagination.pageSize;
+      const pagination: PaginationState = this.paginationState();
+      const skip: number = (pagination.currentPage - 1) * pagination.pageSize;
 
-      const response = await firstValueFrom(
+      const response: ProductsResponse = await firstValueFrom(
         this.productService.getProducts(
           this.currentSearchQuery,
           pagination.pageSize,
@@ -232,7 +236,7 @@ export class ProductsComponent implements OnInit {
         totalItems: response.total,
         totalPages: Math.ceil(response.total / pagination.pageSize),
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error loading products:", error);
     }
   }
@@ -243,12 +247,12 @@ export class ProductsComponent implements OnInit {
         startWith(""),
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((query) => {
-          const searchQuery = query?.trim() || "";
+        switchMap((query: string | null): Promise<void> => {
+          const searchQuery: string = query?.trim() || "";
           this.currentSearchQuery = searchQuery;
 
           // Reset to first page when searching
-          this.paginationState.update((state) => ({
+          this.paginationState.update((state: PaginationState) => ({
             ...state,
             currentPage: 1,
           }));
@@ -261,8 +265,8 @@ export class ProductsComponent implements OnInit {
 
   private async loadProductsForSearch(searchQuery: string): Promise<void> {
     try {
-      const pagination = this.paginationState();
-      const response = await firstValueFrom(
+      const pagination: PaginationState = this.paginationState();
+      const response: ProductsResponse = await firstValueFrom(
         this.productService.getProducts(searchQuery, pagination.pageSize, 0)
       );
 
@@ -273,7 +277,7 @@ export class ProductsComponent implements OnInit {
         totalItems: response.total,
         totalPages: Math.ceil(response.total / pagination.pageSize),
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error searching products:", error);
     }
   }
@@ -310,21 +314,23 @@ export class ProductsComponent implements OnInit {
   }
 
   protected async onDeleteConfirmed(): Promise<void> {
-    const product = this.selectedProduct();
+    const product: Product | null = this.selectedProduct();
     if (product) {
       try {
         await firstValueFrom(this.productService.deleteProduct(product.id));
 
         // Remove from local state
-        const currentProducts = this.products();
-        const updatedProducts = currentProducts.filter(
-          (p) => p.id !== product.id
+        const currentProducts: Product[] = this.products();
+        const updatedProducts: Product[] = currentProducts.filter(
+          (item: Product): boolean => {
+            return item.id !== item.id;
+          }
         );
         this.products.set(updatedProducts);
         this.filteredProducts.set(updatedProducts);
 
         console.log("Product deleted successfully");
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error deleting product:", error);
       }
     }

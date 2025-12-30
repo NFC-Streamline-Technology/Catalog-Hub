@@ -328,7 +328,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   protected productForm!: FormGroup;
   protected categories = signal<string[]>([]);
-  protected isSubmitting = signal(false);
+  protected isSubmitting = signal<boolean>(false);
   protected translate: any;
   protected productImages: ImageUpload[] = [];
 
@@ -376,17 +376,19 @@ export class ProductFormComponent implements OnInit, OnChanges {
       // Set product images
       this.productImages = [];
       if (this.product.images && this.product.images.length > 0) {
-        this.productImages = this.product.images.map((url, index) => ({
-          id: `existing-${index}`,
-          url: url,
-          file: null as any,
-        }));
+        this.productImages = this.product.images.map(
+          (url: string, index: number): ImageUpload => ({
+            id: `existing-${index}`,
+            url: url,
+            file: null,
+          })
+        );
       } else if (this.product.thumbnail) {
         this.productImages = [
           {
             id: "existing-0",
             url: this.product.thumbnail,
-            file: null as any,
+            file: null,
           },
         ];
       }
@@ -413,11 +415,11 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   private async loadCategories(): Promise<void> {
     try {
-      const categories = await firstValueFrom(
+      const categories: string[] = await firstValueFrom(
         this.productService.getCategories()
       );
       this.categories.set(categories);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error loading categories:", error);
     }
   }
@@ -428,7 +430,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   protected async onSubmit(): Promise<void> {
     if (this.productForm.invalid) {
-      Object.keys(this.productForm.controls).forEach((key) => {
+      Object.keys(this.productForm.controls).forEach((key: string) => {
         this.productForm.get(key)?.markAsTouched();
       });
       return;
@@ -440,7 +442,9 @@ export class ProductFormComponent implements OnInit, OnChanges {
       const formValue = this.productForm.value;
 
       // Convert images to URLs
-      const imageUrls = this.productImages.map((img) => img.url);
+      const imageUrls: string[] = this.productImages.map(
+        (img: ImageUpload) => img.url
+      );
 
       if (this.isEditMode()) {
         const updateRequest: UpdateProductRequest = {
@@ -448,7 +452,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
           ...formValue,
           images: imageUrls,
         };
-        const updatedProduct = await firstValueFrom(
+        const updatedProduct: Product | null = await firstValueFrom(
           this.productService.updateProduct(updateRequest)
         );
         if (updatedProduct) {
@@ -459,14 +463,14 @@ export class ProductFormComponent implements OnInit, OnChanges {
           ...formValue,
           images: imageUrls,
         };
-        const newProduct = await firstValueFrom(
+        const newProduct: Product | null = await firstValueFrom(
           this.productService.createProduct(createRequest)
         );
         if (newProduct) {
           this.saved.emit(newProduct);
         }
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error saving product:", error);
     } finally {
       this.isSubmitting.set(false);

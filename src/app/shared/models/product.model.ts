@@ -41,7 +41,7 @@ export interface PaginationState {
 }
 
 export interface ImageUpload {
-  file: File;
+  file: File | null;
   url: string;
   id: string;
 }

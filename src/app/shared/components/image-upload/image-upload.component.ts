@@ -74,17 +74,19 @@ export class ImageUploadComponent implements OnInit {
     }
 
     const imageUpload: ImageUpload = {
-      file: null as any, // URL-based image
+      file: null,
       url: url,
       id: this.generateId(),
     };
 
-    const images = [...this.images(), imageUpload];
+    const images: ImageUpload[] = [...this.images(), imageUpload];
     this.imagesChange.emit(images);
   }
 
   protected removeImage(index: number): void {
-    const images = this.images().filter((_, i) => i !== index);
+    const images: ImageUpload[] = this.images().filter(
+      (_: ImageUpload, i: number): boolean => i !== index
+    );
     this.imagesChange.emit(images);
   }
 
@@ -104,7 +106,7 @@ export class ImageUploadComponent implements OnInit {
       return;
     }
 
-    files.forEach((file) => {
+    files.forEach((file: File): void => {
       if (!file.type.startsWith("image/")) {
         this.errorMessage = "Apenas arquivos de imagem são permitidos";
         return;
@@ -123,14 +125,14 @@ export class ImageUploadComponent implements OnInit {
 
   private addImageFile(file: File): void {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = (e: ProgressEvent<FileReader>): void => {
       const imageUpload: ImageUpload = {
         file: file,
         url: e.target?.result as string,
         id: this.generateId(),
       };
 
-      const images = [...this.images(), imageUpload];
+      const images: ImageUpload[] = [...this.images(), imageUpload];
       this.imagesChange.emit(images);
     };
     reader.readAsDataURL(file);
@@ -152,8 +154,8 @@ export class ImageUploadComponent implements OnInit {
   private formatFileSize(bytes: number): string {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const sizes: string[] = ["Bytes", "KB", "MB", "GB"];
+    const i: number = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 }

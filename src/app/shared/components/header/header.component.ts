@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit {
     await this.buildTranslate();
 
     // Listen for language changes
-    this.translateService.onLangChange.subscribe(() => {
+    this.translateService.onLangChange.subscribe((): void => {
       this.buildTranslate();
     });
   }
@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit {
       );
 
       this.translate.set({ ...translate });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error loading translations:", error);
     }
   }

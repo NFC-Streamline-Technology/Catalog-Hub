@@ -9,7 +9,6 @@ import {
 import { CommonModule } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { firstValueFrom } from "rxjs";
-
 import { PaginationState } from "../../models/product.model";
 
 @Component({
@@ -61,9 +60,7 @@ import { PaginationState } from "../../models/product.model";
               [disabled]="pagination.currentPage === 1"
               class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span class="sr-only">{{
-                translate?.previous
-              }}</span>
+              <span class="sr-only">{{ translate?.previous }}</span>
               <svg
                 class="h-5 w-5"
                 viewBox="0 0 20 20"
@@ -154,8 +151,8 @@ export class PaginationComponent implements OnInit {
   }
 
   protected getVisiblePages(): number[] {
-    const totalPages = this.pagination.totalPages;
-    const currentPage = this.pagination.currentPage;
+    const totalPages: number = this.pagination.totalPages;
+    const currentPage: number = this.pagination.currentPage;
     const pages: number[] = [];
 
     if (totalPages <= 7) {

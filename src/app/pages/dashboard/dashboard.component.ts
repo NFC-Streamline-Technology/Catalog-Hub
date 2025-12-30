@@ -377,14 +377,14 @@ export class DashboardComponent implements OnInit {
 
   // Signals
   protected products = signal<Product[]>([]);
-  protected isLoading = signal(true);
-  protected hasError = signal(false);
+  protected isLoading = signal<boolean>(true);
+  protected hasError = signal<boolean>(false);
   protected translate: any;
   protected genericTranslate: any;
 
   // Computed values
   protected kpiData = computed<KPIData>(() => {
-    const products = this.products();
+    const products: Product[] = this.products();
 
     if (products.length === 0) {
       return {
@@ -395,15 +395,19 @@ export class DashboardComponent implements OnInit {
       };
     }
 
-    const totalProducts = products.length;
-    const totalStockValue = products.reduce(
-      (sum, product) => sum + product.price * product.stock,
+    const totalProducts: number = products.length;
+    const totalStockValue: number = products.reduce(
+      (sum: number, product: Product): number =>
+        sum + product.price * product.stock,
       0
     );
-    const averagePrice =
-      products.reduce((sum, product) => sum + product.price, 0) / totalProducts;
-    const uniqueCategories = new Set(
-      products.map((product) => product.category)
+    const averagePrice: number =
+      products.reduce(
+        (sum: number, product: Product): number => sum + product.price,
+        0
+      ) / totalProducts;
+    const uniqueCategories: number = new Set(
+      products.map((product: Product): string => product.category)
     ).size;
 
     return {
@@ -414,29 +418,37 @@ export class DashboardComponent implements OnInit {
     };
   });
 
-  protected categoriesData = computed<CategoryData[]>(() => {
-    const products = this.products();
+  protected categoriesData = computed<CategoryData[]>((): CategoryData[] => {
+    const products: Product[] = this.products();
 
     if (products.length === 0) {
       return [];
     }
 
     // Group products by category and count them
-    const categoryCount = products.reduce((acc, product) => {
-      acc[product.category] = (acc[product.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const categoryCount: Record<string, number> = products.reduce(
+      (
+        acc: Record<string, number>,
+        product: Product
+      ): Record<string, number> => {
+        acc[product.category] = (acc[product.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
-    const totalProducts = products.length;
+    const totalProducts: number = products.length;
 
     // Convert to chart format and sort by value descending
     return Object.entries(categoryCount)
-      .map(([name, count]) => ({
-        name: name.charAt(0).toUpperCase() + name.slice(1),
-        count,
-        percentage: Math.round((count / totalProducts) * 100),
-      }))
-      .sort((a, b) => b.count - a.count);
+      .map(
+        ([name, count]: [string, number]): CategoryData => ({
+          name: name.charAt(0).toUpperCase() + name.slice(1),
+          count,
+          percentage: Math.round((count / totalProducts) * 100),
+        })
+      )
+      .sort((a: CategoryData, b: CategoryData): number => b.count - a.count);
   });
 
   async ngOnInit(): Promise<void> {
@@ -444,7 +456,7 @@ export class DashboardComponent implements OnInit {
     await this.loadDashboardData();
 
     // Listen for language changes
-    this.translateService.onLangChange.subscribe(() => {
+    this.translateService.onLangChange.subscribe((): void => {
       this.buildTranslate();
     });
   }
@@ -460,7 +472,7 @@ export class DashboardComponent implements OnInit {
 
       this.translate = dashboardTranslate;
       this.genericTranslate = genericTranslate;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error loading translations:", error);
     }
   }
@@ -470,11 +482,11 @@ export class DashboardComponent implements OnInit {
       this.isLoading.set(true);
       this.hasError.set(false);
 
-      const products = await firstValueFrom(
+      const products: Product[] = await firstValueFrom(
         this.productService.getAllProducts()
       );
       this.products.set(products);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error loading dashboard data:", error);
       this.hasError.set(true);
     } finally {
@@ -531,7 +543,7 @@ export class DashboardComponent implements OnInit {
   }
 
   protected getCategoryIcon(categoryName: string): string {
-    const iconMap: { [key: string]: string } = {
+    const iconMap: Record<string, string> = {
       smartphones: "📱",
       laptops: "💻",
       fragrances: "🌸",
@@ -567,9 +579,12 @@ export class DashboardComponent implements OnInit {
   }
 
   protected getAverageProductsPerCategory(): number {
-    const categories = this.categoriesData();
+    const categories: CategoryData[] = this.categoriesData();
     if (categories.length === 0) return 0;
-    const total = categories.reduce((sum, cat) => sum + cat.count, 0);
+    const total: number = categories.reduce(
+      (sum: number, cat: CategoryData): number => sum + cat.count,
+      0
+    );
     return Math.round(total / categories.length);
   }
 
@@ -588,20 +603,23 @@ export class DashboardComponent implements OnInit {
   }
 
   protected getOtherCategoriesCount(): number {
-    const topCategories = this.getTopCategories();
-    const allCategories = this.categoriesData();
-    const topCategoriesCount = topCategories.reduce(
-      (sum, cat) => sum + cat.count,
+    const topCategories: CategoryData[] = this.getTopCategories();
+    const allCategories: CategoryData[] = this.categoriesData();
+    const topCategoriesCount: number = topCategories.reduce(
+      (sum: number, cat: CategoryData): number => sum + cat.count,
       0
     );
-    const totalCount = allCategories.reduce((sum, cat) => sum + cat.count, 0);
+    const totalCount: number = allCategories.reduce(
+      (sum: number, cat: CategoryData): number => sum + cat.count,
+      0
+    );
     return totalCount - topCategoriesCount;
   }
 
   protected getOtherCategoriesPercentage(): number {
-    const topCategories = this.getTopCategories();
-    const topPercentage = topCategories.reduce(
-      (sum, cat) => sum + cat.percentage,
+    const topCategories: CategoryData[] = this.getTopCategories();
+    const topPercentage: number = topCategories.reduce(
+      (sum: number, cat: CategoryData): number => sum + cat.percentage,
       0
     );
     return Math.max(0, 100 - topPercentage);
