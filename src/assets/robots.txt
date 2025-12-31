@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Sitemap: https://catalog-hub-73d36.web.app/sitemap.xml
