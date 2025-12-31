@@ -15,22 +15,23 @@ import {
 export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = "https://dummyjson.com";
+  private readonly url = new URL(`${this.baseUrl}/products`);
 
   /**
    * Get all products with optional search and pagination
    */
   public getProducts(
-    searchQuery?: string,
+    search: string = "",
     limit: number = 12,
     skip: number = 0
   ): Observable<ProductsResponse> {
-    let url: string = `${this.baseUrl}/products?limit=${limit}&skip=${skip}`;
+    const url = new URL(`${this.url.href}/search`);
 
-    if (searchQuery) {
-      url += `&search=${encodeURIComponent(searchQuery)}`;
-    }
+    url.searchParams.set("limit", limit.toString());
+    url.searchParams.set("skip", skip.toString());
+    search && url.searchParams.set("q", encodeURIComponent(search));
 
-    return this.http.get<ProductsResponse>(url).pipe(
+    return this.http.get<ProductsResponse>(url.href).pipe(
       catchError((error): Observable<ProductsResponse> => {
         console.error("Error fetching products:", error);
         return of({ products: [], total: 0, skip: 0, limit: 0 });
@@ -42,7 +43,7 @@ export class ProductService {
    * Get a single product by ID
    */
   public getProduct(id: number): Observable<Product | null> {
-    return this.http.get<Product>(`${this.baseUrl}/products/${id}`).pipe(
+    return this.http.get<Product>(`${this.url.href}/${id}`).pipe(
       catchError((error): Observable<null> => {
         console.error("Error fetching product:", error);
         return of(null);
@@ -58,7 +59,7 @@ export class ProductService {
     product: CreateProductRequest
   ): Observable<Product | null> {
     return this.http
-      .post<Product>(`${this.baseUrl}/products/add`, product)
+      .post<Product>(`${this.url.href}/add`, product)
       .pipe(
         catchError((error): Observable<null> => {
           console.error("Error creating product:", error);
@@ -72,10 +73,11 @@ export class ProductService {
    * Note: DummyJSON API simulates update but doesn't persist data
    */
   public updateProduct(
+    id: number,
     product: UpdateProductRequest
   ): Observable<Product | null> {
     return this.http
-      .put<Product>(`${this.baseUrl}/products/${product.id}`, product)
+      .put<Product>(`${this.url.href}/${id}`, product)
       .pipe(
         catchError((error): Observable<null> => {
           console.error("Error updating product:", error);
@@ -89,7 +91,7 @@ export class ProductService {
    * Note: DummyJSON API simulates deletion but doesn't persist data
    */
   public deleteProduct(id: number): Observable<boolean> {
-    return this.http.delete<Product>(`${this.baseUrl}/products/${id}`).pipe(
+    return this.http.delete<Product>(`${this.url.href}/${id}`).pipe(
       map((): boolean => true),
       catchError((error): Observable<boolean> => {
         console.error("Error deleting product:", error);
@@ -102,8 +104,9 @@ export class ProductService {
    * Get ALL products without pagination (for dashboard calculations)
    */
   public getAllProducts(): Observable<Product[]> {
+    this.url.searchParams.set("limit", "0");
     return this.http
-      .get<ProductsResponse>(`${this.baseUrl}/products?limit=0`)
+      .get<ProductsResponse>(this.url.href)
       .pipe(
         map((response): Product[] => response.products),
         catchError((error): Observable<Product[]> => {
@@ -117,11 +120,16 @@ export class ProductService {
    * Get product categories
    */
   public getCategories(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/products/categories`).pipe(
-      catchError((error): Observable<string[]> => {
-        console.error("Error fetching categories:", error);
-        return of([]);
-      })
-    );
+    return this.http
+      .get<Record<string, string>[]>(`${this.url.href}/categories`)
+      .pipe(
+        map((categories): string[] => {
+          return categories.map((category: any): string => category.slug);
+        }),
+        catchError((error): Observable<string[]> => {
+          console.error("Error fetching categories:", error);
+          return of([]);
+        })
+      );
   }
 }
