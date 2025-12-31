@@ -2,7 +2,16 @@
   <div class="container mx-auto px-4 py-4">
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-8">
-        <h1 class="text-2xl font-bold text-gray-900">📦 {{ "Catalog Hub" }}</h1>
+        <div class="flex gap-1">
+          <img
+            src="assets/icon.svg"
+            alt="Catalog Hub Icon"
+            class="h-8 w-8 mr-2"
+          />
+          <h1 class="text-2xl font-bold text-gray-900">
+            {{ "Catalog Hub" }}
+          </h1>
+        </div>
 
         <!-- Navigation Menu -->
         <nav class="hidden md:flex space-x-6">
@@ -23,16 +32,12 @@
         </nav>
       </div>
 
-      <div class="flex items-center space-x-2">
-        <select
-          (change)="changeLanguage($event)"
-          class="form-input py-1 text-sm border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-        >
+      <div class="flex items-center space-x-2 w-48">
+        <select (change)="changeLanguage($event)" class="form-select">
           <option value="pt-BR">Português</option>
           <option value="en-US">English</option>
           <option value="es-ES">Español</option>
         </select>
-
       </div>
     </div>
   </div>

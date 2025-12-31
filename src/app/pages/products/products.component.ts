@@ -20,6 +20,9 @@ import { ProductFormComponent } from "./components/product-form/product-form.com
 import { ProductCardComponent } from "./components/product-card/product-card.component";
 import { ConfirmDialogComponent } from "../../shared/components/confirm-dialog/confirm-dialog.component";
 import { PaginationComponent } from "../../shared/components/pagination/pagination.component";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { faBox, faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-products",
@@ -31,116 +34,109 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
     ProductCardComponent,
     ConfirmDialogComponent,
     PaginationComponent,
+    FontAwesomeModule,
   ],
   template: `
     <div class="space-y-8">
-      <!-- Header -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div
-          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-        >
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900">
-              {{ translate?.title }}
-            </h1>
-            <p class="text-gray-600 mt-1">
-              {{ translate?.subtitle }}
-            </p>
-            <div class="flex items-center space-x-4 mt-3 text-sm text-gray-500">
-              <span>
-                {{ translate?.total }}:
-                <strong class="text-gray-900">
-                  {{ paginationState().totalItems }}
-                </strong>
-                {{ translate?.products }}
-              </span>
-              <span>
-                {{ translate?.page }}
-                <strong class="text-gray-900">
-                  {{ paginationState().currentPage }}
-                </strong>
-                {{ translate?.of }}
-                <strong class="text-gray-900">
-                  {{ paginationState().totalPages }}
-                </strong>
-              </span>
-            </div>
-          </div>
-
-          <button
-            class="btn-primary flex items-center space-x-2"
-            (click)="openCreateForm()"
-          >
-            <span>➕</span>
-            <span>{{ translate?.createProduct }}</span>
-          </button>
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">
+            {{ translate?.title }}
+          </h1>
+          <p class="text-gray-600 mt-1">
+            {{ translate?.subtitle }}
+          </p>
         </div>
+
+        <button
+          class="btn-primary flex items-center space-x-2"
+          (click)="openCreateForm()"
+        >
+          <fa-icon [icon]="icons.faPlus" />
+          <span>{{ translate?.createProduct }}</span>
+        </button>
       </div>
 
-      <!-- Search and Filters -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex flex-col sm:flex-row gap-4">
+      <div
+        class="grid grid-cols-5 gap-4 bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+      >
+        <div class="flex flex-col sm:flex-row gap-4 col-span-4">
           <div class="flex-1">
-            <label class="form-label">{{ translate?.search }}</label>
             <div class="relative">
               <input
                 type="text"
                 [formControl]="searchControl"
                 [placeholder]="translate?.searchPlaceholder"
-                class="form-input w-full pl-10"
+                class="form-input w-full pl-10 h-10"
               />
               <div
                 class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
               >
-                <span class="text-gray-400">🔍</span>
+                <fa-icon [icon]="icons.faSearch" class="text-gray-400" />
               </div>
             </div>
           </div>
         </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 col-span-1">
+          <fieldset
+            [disabled]="true"
+            class="flex items-center space-x-2 w-full"
+          >
+            <select [formControl]="categoryControl" class="form-select">
+              <option value="">
+                {{ translate?.allCategories }}
+              </option>
+              <option *ngFor="let category of categories()" [value]="category">
+                {{ category }}
+              </option>
+            </select>
+          </fieldset>
+        </div>
       </div>
 
-      <!-- Products Grid -->
-      <div *ngIf="filteredProducts().length > 0; else noProducts">
-        <!-- Results Summary -->
-        <div class="flex items-center justify-between mb-6">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        @if(products().length) {
+        <div class="flex items-center justify-between p-6">
           <p class="text-gray-600">
             {{ translate?.showing }} {{ getStartItem() }} - {{ getEndItem() }}
             {{ translate?.of }} {{ paginationState().totalItems }}
             {{ translate?.products }}
           </p>
-          <div class="text-sm text-gray-500">
-            {{ filteredProducts().length }} {{ translate?.productsOnPage }}
+          <div class="flex items-center gap-2 text-sm text-gray-500">
+            <label>{{ translate?.totalItems }}</label>
+            <fieldset class="w-20">
+              <select [formControl]="pageSizeControl" class="form-select">
+                <option value="8">8</option>
+                <option value="12">12</option>
+                <option value="24">24</option>
+                <option value="48">48</option>
+              </select>
+            </fieldset>
           </div>
         </div>
+        }
 
+        <hr />
+        @if(paginationState().totalItems > 0) {
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6"
         >
+          @for (product of products(); track product.id) {
           <app-product-card
-            *ngFor="
-              let product of filteredProducts();
-              trackBy: trackByProductId
-            "
             [product]="product"
             (edit)="openEditForm(product)"
             (delete)="openDeleteConfirm(product)"
           />
+          }
         </div>
 
-        <!-- Pagination -->
-        <!-- When the application language changes, this app-pagination component is destroyed and recreated by Angular so that all labels reflect the current locale. -->
-        <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
-          <app-pagination
-            [pagination]="paginationState()"
-            (pageChanged)="onPageChanged($event)"
-          />
-        </div>
-      </div>
-
-      <ng-template #noProducts>
+        } @else {
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
           <div class="text-center">
-            <div class="text-gray-300 text-8xl mb-6">📦</div>
+            <fa-icon [icon]="icons.faBox" class="text-gray-300 text-8xl mb-6" />
             <h3 class="text-xl font-semibold text-gray-900 mb-2">
               {{ translate?.noProducts }}
             </h3>
@@ -148,21 +144,32 @@ import { PaginationComponent } from "../../shared/components/pagination/paginati
               {{ translate?.noProductsDescription }}
             </p>
             <button class="btn-primary" (click)="openCreateForm()">
-              <span class="mr-2">➕</span>
+              <fa-icon [icon]="icons.faPlus" class="mr-2" />
               {{ translate?.createFirstProduct }}
             </button>
           </div>
         </div>
-      </ng-template>
+        }
+
+        <hr />
+
+        @if(showPaginationComponent()) {
+        <app-pagination
+          [pagination]="paginationState()"
+          (pageChanged)="onPageChanged($event)"
+        />
+        }
+      </div>
 
       <!-- Product Form Modal -->
+      @if(showForm()) {
       <app-product-form
-        *ngIf="showForm()"
         [product]="selectedProduct()"
         [isVisible]="showForm()"
         (saved)="onProductSaved($event)"
         (cancelled)="onFormCancelled()"
       />
+      }
 
       <!-- Delete Confirmation Dialog -->
       <app-confirm-dialog
@@ -179,34 +186,41 @@ export class ProductsComponent implements OnInit {
   private translateService = inject(TranslateService);
 
   // Signals
-  protected products = signal<Product[]>([]);
-  protected filteredProducts = signal<Product[]>([]);
-  protected showForm = signal<boolean>(false);
-  protected showDeleteConfirm = signal<boolean>(false);
-  protected selectedProduct = signal<Product | null>(null);
-  protected translate: any;
-  protected paginationState = signal<PaginationState>({
+  protected readonly categories = signal<string[]>([]);
+  protected readonly products = signal<Product[]>([]);
+  protected readonly showForm = signal<boolean>(false);
+  protected readonly showPaginationComponent = signal<boolean>(true);
+  protected readonly showDeleteConfirm = signal<boolean>(false);
+  protected readonly selectedProduct = signal<Product | null>(null);
+  protected readonly paginationState = signal<PaginationState>({
     currentPage: 1,
     pageSize: 12,
     totalItems: 0,
     totalPages: 0,
   });
 
-  // Search state
-  private currentSearchQuery = "";
+  protected translate: any;
+  protected readonly icons = { faPlus, faSearch, faBox };
 
-  // Form controls
-  protected searchControl = new FormControl("");
+  // Search state
+  protected readonly searchControl = new FormControl<string>("");
+  protected readonly categoryControl = new FormControl<string>("");
+  protected readonly pageSizeControl = new FormControl<number>(
+    this.paginationState().pageSize
+  );
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
     await this.loadProducts();
     this.setupSearch();
+    this.setupPageSizeChange();
 
     // Listen for language changes
-    this.translateService.onLangChange.subscribe(() => {
-      this.buildTranslate();
-    });
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
   }
 
   private async buildTranslate(): Promise<void> {
@@ -217,27 +231,28 @@ export class ProductsComponent implements OnInit {
     this.translate = { ...translate, generic };
   }
 
-  private async loadProducts(): Promise<void> {
+  private async loadProducts(searching: boolean = false): Promise<void> {
     try {
       const pagination: PaginationState = this.paginationState();
       const skip: number = (pagination.currentPage - 1) * pagination.pageSize;
-
-      const response: ProductsResponse = await firstValueFrom(
-        this.productService.getProducts(
-          this.currentSearchQuery,
-          pagination.pageSize,
-          skip
-        )
+      const getProducts = this.productService.getProducts(
+        this.searchControl.value?.trim() || "",
+        pagination.pageSize,
+        searching ? 0 : skip
       );
 
-      this.filteredProducts.set(response.products);
-      this.paginationState.set({
-        ...pagination,
-        totalItems: response.total,
-        totalPages: Math.ceil(response.total / pagination.pageSize),
+      const response: ProductsResponse = await firstValueFrom(getProducts);
+      this.products.set(response.products);
+      this.paginationState.update((state): PaginationState => {
+        return {
+          ...state,
+          currentPage: searching ? 1 : state.currentPage,
+          totalItems: response.total,
+          totalPages: Math.ceil(response.total / state.pageSize),
+        };
       });
     } catch (error: unknown) {
-      console.error("Error loading products:", error);
+      console.error("Error searching products:", error);
     }
   }
 
@@ -247,39 +262,40 @@ export class ProductsComponent implements OnInit {
         startWith(""),
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((query: string | null): Promise<void> => {
-          const searchQuery: string = query?.trim() || "";
-          this.currentSearchQuery = searchQuery;
+        switchMap((): Promise<void> => {
+          this.resetPagination();
 
-          // Reset to first page when searching
-          this.paginationState.update((state: PaginationState) => ({
-            ...state,
-            currentPage: 1,
-          }));
-
-          return this.loadProductsForSearch(searchQuery);
+          return this.loadProducts(true);
         })
       )
+      .pipe(takeUntilDestroyed())
       .subscribe();
   }
 
-  private async loadProductsForSearch(searchQuery: string): Promise<void> {
-    try {
-      const pagination: PaginationState = this.paginationState();
-      const response: ProductsResponse = await firstValueFrom(
-        this.productService.getProducts(searchQuery, pagination.pageSize, 0)
-      );
+  private setupPageSizeChange(): void {
+    const statePageSize = this.paginationState().pageSize;
+    this.pageSizeControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((pageSize: number | null): void => {
+        this.paginationState.update(
+          (state): PaginationState => ({
+            ...state,
+            pageSize: pageSize ?? statePageSize,
+            currentPage: 1,
+          })
+        );
 
-      this.filteredProducts.set(response.products);
-      this.paginationState.set({
-        ...pagination,
-        currentPage: 1,
-        totalItems: response.total,
-        totalPages: Math.ceil(response.total / pagination.pageSize),
+        this.loadProducts();
       });
-    } catch (error: unknown) {
-      console.error("Error searching products:", error);
-    }
+  }
+
+  private resetPagination(): void {
+    this.paginationState.update(
+      (state: PaginationState): PaginationState => ({
+        ...state,
+        currentPage: 1,
+      })
+    );
   }
 
   protected openCreateForm(): void {
@@ -319,15 +335,14 @@ export class ProductsComponent implements OnInit {
       try {
         await firstValueFrom(this.productService.deleteProduct(product.id));
 
-        // Remove from local state
         const currentProducts: Product[] = this.products();
         const updatedProducts: Product[] = currentProducts.filter(
           (item: Product): boolean => {
-            return item.id !== item.id;
+            return item.id !== product.id;
           }
         );
+
         this.products.set(updatedProducts);
-        this.filteredProducts.set(updatedProducts);
 
         console.log("Product deleted successfully");
       } catch (error: unknown) {
@@ -344,12 +359,11 @@ export class ProductsComponent implements OnInit {
     this.selectedProduct.set(null);
   }
 
-  protected trackByProductId(index: number, product: Product): number {
-    return product.id;
-  }
-
   protected onPageChanged(page: number): void {
-    this.paginationState.update((state) => ({ ...state, currentPage: page }));
+    this.paginationState.update((state): PaginationState => {
+      return { ...state, currentPage: page };
+    });
+
     this.loadProducts();
   }
 

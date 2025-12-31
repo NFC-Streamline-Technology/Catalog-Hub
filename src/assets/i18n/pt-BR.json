@@ -93,8 +93,9 @@
       "page": "Página",
       "of": "de",
       "search": "Pesquisar produtos",
+      "allCategories": "Todas as categorias",
       "showing": "Mostrando",
-      "productsOnPage": "produtos na página atual",
+      "totalItems": "Produtos por página:",
       "fields": {
         "title": "Título",
         "description": "Descrição",

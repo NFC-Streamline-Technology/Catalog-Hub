@@ -5,6 +5,7 @@ import { firstValueFrom } from "rxjs";
 
 import { Product } from "../../shared/models/product.model";
 import { ProductService } from "../../core/services/product.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface KPIData {
   totalProducts: number;
@@ -456,9 +457,11 @@ export class DashboardComponent implements OnInit {
     await this.loadDashboardData();
 
     // Listen for language changes
-    this.translateService.onLangChange.subscribe((): void => {
-      this.buildTranslate();
-    });
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
   }
 
   private async buildTranslate(): Promise<void> {

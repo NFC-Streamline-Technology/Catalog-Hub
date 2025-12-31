@@ -12,6 +12,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { firstValueFrom } from "rxjs";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-confirm-dialog",
@@ -31,6 +32,13 @@ export class ConfirmDialogComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
+
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
   }
 
   private async buildTranslate(): Promise<void> {

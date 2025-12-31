@@ -9,34 +9,44 @@ import {
 import { CommonModule } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { firstValueFrom } from "rxjs";
-
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { faBox, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Product } from "../../../../shared/models/product.model";
 
 @Component({
   selector: "app-product-card",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FontAwesomeModule],
   template: `
     <div
       class="card hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group"
     >
       <!-- Product Image -->
       <div class="relative overflow-hidden rounded-lg mb-4">
-        <div *ngIf="product.thumbnail; else noImage">
-          <img
-            [src]="product.thumbnail"
-            [alt]="product.title"
-            class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-            (error)="onImageError($event)"
-          />
+        @if(product.thumbnail){
+        <img
+          [src]="product.thumbnail"
+          [alt]="product.title"
+          class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+          (error)="onImageError($event)"
+        />
+        } @else {
+        <div
+          class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+        >
+          <fa-icon [icon]="icons.faBox" class="text-gray-400 text-4xl" />
         </div>
-        <ng-template #noImage>
-          <div
-            class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
-          >
-            <span class="text-gray-400 text-4xl">📦</span>
-          </div>
-        </ng-template>
+        }
+
+        <!-- Discount Badge -->
+        @if(product.discountPercentage && product.discountPercentage > 0){
+        <div
+          class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+        >
+          -{{ product.discountPercentage.toFixed(0) }}%
+        </div>
+        }
 
         <!-- Stock Badge -->
         <div class="absolute top-2 right-2">
@@ -44,51 +54,18 @@ import { Product } from "../../../../shared/models/product.model";
             {{ getStockText() }}
           </span>
         </div>
-
-        <!-- Discount Badge -->
-        <div
-          *ngIf="product.discountPercentage && product.discountPercentage > 0"
-          class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
-        >
-          -{{ product.discountPercentage.toFixed(0) }}%
-        </div>
       </div>
 
       <!-- Product Info -->
       <div class="space-y-3">
         <!-- Title and Category -->
         <div>
-          <div class="flex items-center justify-between mb-1">
-            <span
-              class="text-xs font-medium text-primary-600 uppercase tracking-wide"
-            >
-              {{ product.category }}
-            </span>
-            <div
-              *ngIf="product.rating && product.rating > 0"
-              class="flex items-center space-x-1"
-            >
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-xs text-gray-600">{{
-                product.rating.toFixed(1)
-              }}</span>
-            </div>
-          </div>
           <h3 class="font-semibold text-gray-900 line-clamp-2 text-lg">
             {{ product.title }}
           </h3>
           <p class="text-sm text-gray-600 line-clamp-2 mt-1">
             {{ product.description }}
           </p>
-        </div>
-
-        <!-- Brand -->
-        <div *ngIf="product.brand" class="flex items-center space-x-2">
-          <span
-            class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
-          >
-            {{ product.brand }}
-          </span>
         </div>
 
         <!-- Price -->
@@ -98,35 +75,33 @@ import { Product } from "../../../../shared/models/product.model";
               <span class="text-2xl font-bold text-gray-900">
                 {{ getPriceDisplay(product.price) }}
               </span>
-              <span
-                *ngIf="
-                  product.discountPercentage && product.discountPercentage > 0
-                "
-                class="text-sm text-gray-500 line-through"
-              >
+              @if(product.discountPercentage && product.discountPercentage > 0)
+              {
+              <span class="text-sm text-gray-500 line-through">
                 {{
                   getOriginalPrice(product.price, product.discountPercentage)
                 }}
               </span>
+              }
             </div>
           </div>
         </div>
 
         <!-- Actions -->
-        <div class="flex space-x-2 pt-3 border-t border-gray-100">
+        <div class="flex space-x-2 pt-3 border-gray-100">
           <button
-            class="btn-secondary flex-1 text-sm transition-all duration-200 hover:scale-105"
+            class="btn-primary flex-1 text-sm transition-all duration-200 hover:scale-105"
             (click)="onEdit()"
           >
-            <span class="mr-1">✏️</span>
-            {{ translate?.generic?.edit || "Editar" }}
+            <fa-icon [icon]="icons.faEdit" class="mr-1" />
+            {{ translate?.generic?.edit }}
           </button>
           <button
             class="btn-danger flex-1 text-sm transition-all duration-200 hover:scale-105"
             (click)="onDelete()"
           >
-            <span class="mr-1">🗑️</span>
-            {{ translate?.generic?.delete || "Excluir" }}
+            <fa-icon [icon]="icons.faTrash" class="mr-1" />
+            {{ translate?.generic?.delete }}
           </button>
         </div>
       </div>
@@ -148,11 +123,21 @@ export class ProductCardComponent implements OnInit {
   @Output() edit = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
 
-  private translateService = inject(TranslateService);
+  protected readonly icons = { faEdit, faTrash, faBox };
+
   protected translate: any;
+
+  private translateService = inject(TranslateService);
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
+
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
   }
 
   private async buildTranslate(): Promise<void> {

@@ -10,6 +10,7 @@ import { CommonModule } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { firstValueFrom } from "rxjs";
 import { PaginationState } from "../../models/product.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-pagination",
@@ -18,7 +19,7 @@ import { PaginationState } from "../../models/product.model";
   template: `
     <div
       *ngIf="pagination.totalPages > 1"
-      class="flex items-center justify-between bg-white px-4 py-3 sm:px-6 border-t border-gray-200"
+      class="flex items-center justify-between px-4 py-3 sm:px-6"
     >
       <div class="flex flex-1 justify-between sm:hidden">
         <button
@@ -120,6 +121,13 @@ export class PaginationComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
+
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
   }
 
   private async buildTranslate(): Promise<void> {

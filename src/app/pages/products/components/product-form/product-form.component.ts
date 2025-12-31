@@ -26,6 +26,7 @@ import {
 } from "../../../../shared/models/product.model";
 import { ProductService } from "../../../../core/services/product.service";
 import { ImageUploadComponent } from "../../../../shared/components/image-upload/image-upload.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-product-form",
@@ -46,9 +47,7 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
           <div class="px-6 py-4 border-b border-gray-200">
             <h2 class="text-xl font-semibold text-gray-900">
               {{
-                isEditMode()
-                  ? translate?.editProduct || "Editar Produto"
-                  : translate?.createProduct || "Criar Produto"
+                isEditMode() ? translate?.editProduct : translate?.createProduct
               }}
             </h2>
           </div>
@@ -58,7 +57,7 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
             <!-- Title -->
             <div>
               <label class="form-label">
-                {{ translate?.fields?.title || "Título" }} *
+                {{ translate?.fields?.title }} *
               </label>
               <input
                 type="text"
@@ -77,16 +76,10 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
                 class="form-error"
               >
                 <div *ngIf="productForm.get('title')?.errors?.['required']">
-                  {{
-                    translate?.validation?.titleRequired ||
-                      "Título é obrigatório"
-                  }}
+                  {{ translate?.validation?.titleRequired }}
                 </div>
                 <div *ngIf="productForm.get('title')?.errors?.['minlength']">
-                  {{
-                    translate?.validation?.titleMinLength ||
-                      "Título deve ter pelo menos 3 caracteres"
-                  }}
+                  {{ translate?.validation?.titleMinLength }}
                 </div>
               </div>
             </div>
@@ -94,7 +87,7 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
             <!-- Description -->
             <div>
               <label class="form-label">
-                {{ translate?.fields?.description || "Descrição" }} *
+                {{ translate?.fields?.description }} *
               </label>
               <textarea
                 formControlName="description"
@@ -115,18 +108,12 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
                 <div
                   *ngIf="productForm.get('description')?.errors?.['required']"
                 >
-                  {{
-                    translate?.validation?.descriptionRequired ||
-                      "Descrição é obrigatória"
-                  }}
+                  {{ translate?.validation?.descriptionRequired }}
                 </div>
                 <div
                   *ngIf="productForm.get('description')?.errors?.['minlength']"
                 >
-                  {{
-                    translate?.validation?.descriptionMinLength ||
-                      "Descrição deve ter pelo menos 10 caracteres"
-                  }}
+                  {{ translate?.validation?.descriptionMinLength }}
                 </div>
               </div>
             </div>
@@ -135,13 +122,14 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
               <!-- Price -->
               <div>
                 <label class="form-label">
-                  {{ translate?.fields?.price || "Preço" }} *
+                  {{ translate?.fields?.price }} *
                 </label>
                 <div class="relative">
                   <span
                     class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >$</span
                   >
+                    $
+                  </span>
                   <input
                     type="number"
                     formControlName="price"
@@ -162,16 +150,10 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
                   class="form-error"
                 >
                   <div *ngIf="productForm.get('price')?.errors?.['required']">
-                    {{
-                      translate?.validation?.priceRequired ||
-                        "Preço é obrigatório"
-                    }}
+                    {{ translate?.validation?.priceRequired }}
                   </div>
                   <div *ngIf="productForm.get('price')?.errors?.['min']">
-                    {{
-                      translate?.validation?.priceMin ||
-                        "Preço deve ser maior que 0"
-                    }}
+                    {{ translate?.validation?.priceMin }}
                   </div>
                 </div>
               </div>
@@ -179,7 +161,7 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
               <!-- Stock -->
               <div>
                 <label class="form-label">
-                  {{ translate?.fields?.stock || "Estoque" }} *
+                  {{ translate?.fields?.stock }} *
                 </label>
                 <input
                   type="number"
@@ -191,26 +173,17 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
                     productForm.get('stock')?.touched
                   "
                 />
-                <div
-                  *ngIf="
-                    productForm.get('stock')?.invalid &&
-                    productForm.get('stock')?.touched
-                  "
-                  class="form-error"
-                >
+                @if(productForm.get('stock')?.invalid &&
+                productForm.get('stock')?.touched) {
+                <div class="form-error">
                   <div *ngIf="productForm.get('stock')?.errors?.['required']">
-                    {{
-                      translate?.validation?.stockRequired ||
-                        "Estoque é obrigatório"
-                    }}
+                    {{ translate?.validation?.stockRequired }}
                   </div>
                   <div *ngIf="productForm.get('stock')?.errors?.['min']">
-                    {{
-                      translate?.validation?.stockMin ||
-                        "Estoque deve ser maior ou igual a 0"
-                    }}
+                    {{ translate?.validation?.stockMin }}
                   </div>
                 </div>
+                }
               </div>
             </div>
 
@@ -218,39 +191,38 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
               <!-- Category -->
               <div>
                 <label class="form-label">
-                  {{ translate?.fields?.category || "Categoria" }} *
+                  {{ translate?.fields?.category }} *
                 </label>
+                @if(categories().length > 0) {
                 <select
-                  *ngIf="categories().length > 0; else categoryInput"
+                  formControlName="category"
+                  class="form-select"
+                  [class.border-red-300]="
+                    productForm.get('category')?.invalid &&
+                    productForm.get('category')?.touched
+                  "
+                >
+                  <option hidden value="">
+                    {{ translate?.fields?.selectCategory }}
+                  </option>
+
+                  @for (category of categories(); track $index) {
+                  <option [value]="category">
+                    {{ category }}
+                  </option>
+                  }
+                </select>
+                } @else {
+                <input
+                  type="text"
                   formControlName="category"
                   class="form-input"
                   [class.border-red-300]="
                     productForm.get('category')?.invalid &&
                     productForm.get('category')?.touched
                   "
-                >
-                  <option value="">
-                    {{ translate?.fields?.selectCategory }}
-                  </option>
-                  <option
-                    *ngFor="let category of categories()"
-                    [value]="category"
-                    class="capitalize"
-                  >
-                    {{ category }}
-                  </option>
-                </select>
-                <ng-template #categoryInput>
-                  <input
-                    type="text"
-                    formControlName="category"
-                    class="form-input"
-                    [class.border-red-300]="
-                      productForm.get('category')?.invalid &&
-                      productForm.get('category')?.touched
-                    "
-                  />
-                </ng-template>
+                />
+                }
                 <div
                   *ngIf="
                     productForm.get('category')?.invalid &&
@@ -261,10 +233,7 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
                   <div
                     *ngIf="productForm.get('category')?.errors?.['required']"
                   >
-                    {{
-                      translate?.validation?.categoryRequired ||
-                        "Categoria é obrigatória"
-                    }}
+                    {{ translate?.validation?.categoryRequired }}
                   </div>
                 </div>
               </div>
@@ -272,7 +241,7 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
               <!-- Brand -->
               <div>
                 <label class="form-label">
-                  {{ translate?.fields?.brand || "Marca" }}
+                  {{ translate?.fields?.brand }}
                 </label>
                 <input type="text" formControlName="brand" class="form-input" />
               </div>
@@ -290,25 +259,21 @@ import { ImageUploadComponent } from "../../../../shared/components/image-upload
             class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3"
           >
             <button type="button" class="btn-secondary" (click)="onCancel()">
-              {{ translate?.generic?.cancel || "Cancelar" }}
+              {{ translate?.generic?.cancel }}
             </button>
             <button
               type="submit"
               class="btn-primary"
               [disabled]="productForm.invalid || isSubmitting()"
             >
-              <div
-                *ngIf="isSubmitting(); else saveText"
-                class="flex items-center space-x-2"
-              >
+              @if(isSubmitting()) {
+              <div class="flex items-center space-x-2">
                 <div class="spinner w-4 h-4"></div>
-                <span>{{
-                  translate?.generic?.loading || "Carregando..."
-                }}</span>
+                <span>{{ translate?.generic?.loading }}</span>
               </div>
-              <ng-template #saveText>
-                {{ translate?.generic?.save || "Salvar" }}
-              </ng-template>
+              } @else{
+              <span> {{ translate?.generic?.save }} </span>
+              }
             </button>
           </div>
         </form>
@@ -322,25 +287,28 @@ export class ProductFormComponent implements OnInit, OnChanges {
   @Output() saved = new EventEmitter<Product>();
   @Output() cancelled = new EventEmitter<void>();
 
-  private fb = inject(FormBuilder);
-  private productService = inject(ProductService);
-  private translateService = inject(TranslateService);
+  private readonly fb = inject(FormBuilder);
+  private readonly productService = inject(ProductService);
+  private readonly translateService = inject(TranslateService);
+
+  protected readonly categories = signal<string[]>([]);
+  protected readonly isSubmitting = signal<boolean>(false);
 
   protected productForm!: FormGroup;
-  protected categories = signal<string[]>([]);
-  protected isSubmitting = signal<boolean>(false);
   protected translate: any;
   protected productImages: ImageUpload[] = [];
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.initializeForm();
-    this.buildTranslate();
-    this.loadCategories();
+    await this.buildTranslate();
+    await this.loadCategories();
 
     // Listen for language changes
-    this.translateService.onLangChange.subscribe(() => {
-      this.buildTranslate();
-    });
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
   }
 
   ngOnChanges(): void {
@@ -443,18 +411,21 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
       // Convert images to URLs
       const imageUrls: string[] = this.productImages.map(
-        (img: ImageUpload) => img.url
+        (img: ImageUpload): string => {
+          return img.url;
+        }
       );
 
       if (this.isEditMode()) {
         const updateRequest: UpdateProductRequest = {
-          id: this.product!.id,
           ...formValue,
           images: imageUrls,
         };
+
         const updatedProduct: Product | null = await firstValueFrom(
-          this.productService.updateProduct(updateRequest)
+          this.productService.updateProduct(this.product!.id, updateRequest)
         );
+
         if (updatedProduct) {
           this.saved.emit(updatedProduct);
         }
@@ -463,9 +434,11 @@ export class ProductFormComponent implements OnInit, OnChanges {
           ...formValue,
           images: imageUrls,
         };
+
         const newProduct: Product | null = await firstValueFrom(
           this.productService.createProduct(createRequest)
         );
+
         if (newProduct) {
           this.saved.emit(newProduct);
         }

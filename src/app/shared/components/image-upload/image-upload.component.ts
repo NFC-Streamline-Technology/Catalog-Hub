@@ -10,6 +10,7 @@ import { CommonModule } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { firstValueFrom } from "rxjs";
 import { ImageUpload } from "../../models/product.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-image-upload",
@@ -31,6 +32,13 @@ export class ImageUploadComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
+
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
   }
 
   protected onDragOver(event: DragEvent): void {

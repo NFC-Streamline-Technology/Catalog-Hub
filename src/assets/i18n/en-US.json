@@ -93,8 +93,9 @@
       "page": "Page",
       "of": "of",
       "search": "Search products",
+      "allCategories": "All Categories",
       "showing": "Showing",
-      "productsOnPage": "products on current page",
+      "totalItems": "Products per page:",
       "fields": {
         "title": "Title",
         "description": "Description",

@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { firstValueFrom } from "rxjs";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-header",
@@ -19,9 +20,11 @@ export class HeaderComponent implements OnInit {
     await this.buildTranslate();
 
     // Listen for language changes
-    this.translateService.onLangChange.subscribe((): void => {
-      this.buildTranslate();
-    });
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
   }
 
   protected changeLanguage(event: Event): void {
