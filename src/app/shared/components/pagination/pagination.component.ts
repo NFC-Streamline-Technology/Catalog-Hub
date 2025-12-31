@@ -113,6 +113,15 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   `,
 })
 export class PaginationComponent implements OnInit {
+  constructor() {
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
+  }
+
   @Input({ required: true }) pagination!: PaginationState;
   @Output() pageChanged = new EventEmitter<number>();
 
@@ -121,13 +130,6 @@ export class PaginationComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
-
-    // Listen for language changes
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
   }
 
   private async buildTranslate(): Promise<void> {

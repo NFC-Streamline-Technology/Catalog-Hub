@@ -19,6 +19,15 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   templateUrl: "./image-upload.component.html",
 })
 export class ImageUploadComponent implements OnInit {
+  constructor() {
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
+  }
+
   private readonly translateService = inject(TranslateService);
 
   public readonly images = input<ImageUpload[]>([]);
@@ -32,13 +41,6 @@ export class ImageUploadComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
-
-    // Listen for language changes
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
   }
 
   protected onDragOver(event: DragEvent): void {

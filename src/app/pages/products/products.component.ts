@@ -182,6 +182,18 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   `,
 })
 export class ProductsComponent implements OnInit {
+  constructor() {
+    this.setupSearch();
+    this.setupPageSizeChange();
+
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
+  }
+
   private productService = inject(ProductService);
   private translateService = inject(TranslateService);
 
@@ -212,15 +224,6 @@ export class ProductsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
     await this.loadProducts();
-    this.setupSearch();
-    this.setupPageSizeChange();
-
-    // Listen for language changes
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
   }
 
   private async buildTranslate(): Promise<void> {
@@ -334,17 +337,9 @@ export class ProductsComponent implements OnInit {
     if (product) {
       try {
         await firstValueFrom(this.productService.deleteProduct(product.id));
-
-        const currentProducts: Product[] = this.products();
-        const updatedProducts: Product[] = currentProducts.filter(
-          (item: Product): boolean => {
-            return item.id !== product.id;
-          }
-        );
-
-        this.products.set(updatedProducts);
-
         console.log("Product deleted successfully");
+
+        await this.loadProducts();
       } catch (error: unknown) {
         console.error("Error deleting product:", error);
       }
@@ -359,12 +354,12 @@ export class ProductsComponent implements OnInit {
     this.selectedProduct.set(null);
   }
 
-  protected onPageChanged(page: number): void {
+  protected async onPageChanged(page: number): Promise<void> {
     this.paginationState.update((state): PaginationState => {
       return { ...state, currentPage: page };
     });
 
-    this.loadProducts();
+    await this.loadProducts();
   }
 
   protected getStartItem(): number {

@@ -282,6 +282,15 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   `,
 })
 export class ProductFormComponent implements OnInit, OnChanges {
+  constructor() {
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
+  }
+
   @Input() product: Product | null = null;
   @Input() isVisible = false;
   @Output() saved = new EventEmitter<Product>();
@@ -300,15 +309,9 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   async ngOnInit(): Promise<void> {
     this.initializeForm();
+
     await this.buildTranslate();
     await this.loadCategories();
-
-    // Listen for language changes
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
   }
 
   ngOnChanges(): void {

@@ -27,6 +27,15 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   `,
 })
 export class LoadingSpinnerComponent implements OnInit {
+  constructor() {
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
+  }
+
   protected readonly loadingService = inject(LoadingService);
   protected readonly translateService = inject(TranslateService);
 
@@ -35,13 +44,6 @@ export class LoadingSpinnerComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     // Initialize translations for the current language
     await this.buildTranslate();
-
-    // Listen for language changes
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
   }
 
   private async buildTranslate(): Promise<void> {

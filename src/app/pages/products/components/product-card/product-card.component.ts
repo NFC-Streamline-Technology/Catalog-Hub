@@ -119,6 +119,15 @@ import { Product } from "../../../../shared/models/product.model";
   ],
 })
 export class ProductCardComponent implements OnInit {
+  constructor() {
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
+  }
+
   @Input({ required: true }) product!: Product;
   @Output() edit = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
@@ -131,13 +140,6 @@ export class ProductCardComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
-
-    // Listen for language changes
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
   }
 
   private async buildTranslate(): Promise<void> {

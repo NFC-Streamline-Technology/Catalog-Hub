@@ -12,19 +12,21 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   templateUrl: "./header.component.html",
 })
 export class HeaderComponent implements OnInit {
-  private readonly translateService = inject(TranslateService);
-
-  protected readonly translate = signal<any>(null);
-
-  async ngOnInit(): Promise<void> {
-    await this.buildTranslate();
-
+  constructor() {
     // Listen for language changes
     this.translateService.onLangChange
       .pipe(takeUntilDestroyed())
       .subscribe(async (): Promise<void> => {
         await this.buildTranslate();
       });
+  }
+
+  private readonly translateService = inject(TranslateService);
+
+  protected readonly translate = signal<any>(null);
+
+  async ngOnInit(): Promise<void> {
+    await this.buildTranslate();
   }
 
   protected changeLanguage(event: Event): void {

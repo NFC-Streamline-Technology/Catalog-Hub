@@ -373,18 +373,27 @@ interface CategoryData {
   `,
 })
 export class DashboardComponent implements OnInit {
-  private productService = inject(ProductService);
-  private translateService = inject(TranslateService);
+  constructor() {
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
+  }
+
+  private readonly productService = inject(ProductService);
+  private readonly translateService = inject(TranslateService);
 
   // Signals
-  protected products = signal<Product[]>([]);
-  protected isLoading = signal<boolean>(true);
-  protected hasError = signal<boolean>(false);
+  protected readonly products = signal<Product[]>([]);
+  protected readonly isLoading = signal<boolean>(true);
+  protected readonly hasError = signal<boolean>(false);
   protected translate: any;
   protected genericTranslate: any;
 
   // Computed values
-  protected kpiData = computed<KPIData>(() => {
+  protected kpiData = computed<KPIData>((): KPIData => {
     const products: Product[] = this.products();
 
     if (products.length === 0) {
@@ -455,13 +464,6 @@ export class DashboardComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
     await this.loadDashboardData();
-
-    // Listen for language changes
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
   }
 
   private async buildTranslate(): Promise<void> {

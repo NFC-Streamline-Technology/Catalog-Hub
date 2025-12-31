@@ -21,6 +21,15 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   templateUrl: "./confirm-dialog.component.html",
 })
 export class ConfirmDialogComponent implements OnInit {
+  constructor() {
+    // Listen for language changes
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (): Promise<void> => {
+        await this.buildTranslate();
+      });
+  }
+
   private readonly translateService = inject(TranslateService);
 
   public readonly isVisible = input<boolean>(false);
@@ -32,13 +41,6 @@ export class ConfirmDialogComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate();
-
-    // Listen for language changes
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
   }
 
   private async buildTranslate(): Promise<void> {
