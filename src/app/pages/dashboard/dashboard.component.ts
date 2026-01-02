@@ -2,10 +2,10 @@ import { Component, OnInit, signal, inject, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { firstValueFrom } from "rxjs";
-
 import { Product } from "../../shared/models/product.model";
 import { ProductService } from "../products/services/product.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { LoadingService } from "src/app/core/services/loading.service";
 
 interface KPIData {
   totalProducts: number;
@@ -384,11 +384,12 @@ export class DashboardComponent implements OnInit {
 
   private readonly productService = inject(ProductService);
   private readonly translateService = inject(TranslateService);
+  private readonly loadingService = inject(LoadingService);
 
   // Signals
   protected readonly products = signal<Product[]>([]);
-  protected readonly isLoading = signal<boolean>(true);
   protected readonly hasError = signal<boolean>(false);
+  protected readonly isLoading = this.loadingService.isLoading;
   protected translate: any;
   protected genericTranslate: any;
 
@@ -484,7 +485,6 @@ export class DashboardComponent implements OnInit {
 
   protected async loadDashboardData(): Promise<void> {
     try {
-      this.isLoading.set(true);
       this.hasError.set(false);
 
       const products: Product[] = await firstValueFrom(
@@ -494,8 +494,6 @@ export class DashboardComponent implements OnInit {
     } catch (error: unknown) {
       console.error("Error loading dashboard data:", error);
       this.hasError.set(true);
-    } finally {
-      this.isLoading.set(false);
     }
   }
 

@@ -1,30 +1,29 @@
-import { Injectable, signal } from "@angular/core";
+import { Injectable, Signal, signal } from "@angular/core";
 
 @Injectable({
   providedIn: "root",
 })
 export class LoadingService {
-  private readonly _loading = signal(false);
-  private readonly _loadingCount = signal(0);
+  private readonly loading = signal(false);
+  private readonly currentLoadingCount = signal(0);
 
-  public readonly loading = this._loading.asReadonly();
 
   /**
    * Show loading spinner
    */
   public show(): void {
-    this._loadingCount.update((count): number => count + 1);
-    this._loading.set(true);
+    this.currentLoadingCount.update((count): number => count + 1);
+    this.loading.set(true);
   }
 
   /**
    * Hide loading spinner
    */
   public hide(): void {
-    this._loadingCount.update((count): number => {
+    this.currentLoadingCount.update((count): number => {
       const newCount = Math.max(0, count - 1);
       if (newCount === 0) {
-        this._loading.set(false);
+        this.loading.set(false);
       }
 
       return newCount;
@@ -35,14 +34,21 @@ export class LoadingService {
    * Force hide loading spinner
    */
   public forceHide(): void {
-    this._loadingCount.set(0);
-    this._loading.set(false);
+    this.currentLoadingCount.set(0);
+    this.loading.set(false);
   }
 
   /**
    * Get current loading count
    */
   public get loadingCount(): number {
-    return this._loadingCount();
+    return this.currentLoadingCount();
+  }
+
+  /**
+   * Get current loading state
+   */
+  public get isLoading(): Signal<boolean> {
+    return this.loading.asReadonly();
   }
 }

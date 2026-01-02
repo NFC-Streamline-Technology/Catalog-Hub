@@ -11,7 +11,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   imports: [CommonModule],
   template: `
     <div
-      *ngIf="loadingService.loading()"
+      *ngIf="isLoading()"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25"
     >
       <div class="bg-white rounded-lg p-6 shadow-xl">
@@ -39,6 +39,7 @@ export class LoadingSpinnerComponent implements OnInit {
   protected readonly loadingService = inject(LoadingService);
   protected readonly translateService = inject(TranslateService);
 
+  protected readonly isLoading = this.loadingService.isLoading;
   protected translate = signal<any>(null);
 
   async ngOnInit(): Promise<void> {
