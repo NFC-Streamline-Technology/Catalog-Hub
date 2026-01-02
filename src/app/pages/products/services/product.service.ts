@@ -1,21 +1,20 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, of } from "rxjs";
-import { map, catchError } from "rxjs/operators";
+import { map, catchError, first } from "rxjs/operators";
 import {
   Product,
   ProductsResponse,
   CreateProductRequest,
   UpdateProductRequest,
-} from "../../shared/models/product.model";
+} from "../../../shared/models/product.model";
 
 @Injectable({
   providedIn: "root",
 })
 export class ProductService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = "https://dummyjson.com";
-  private readonly url = new URL(`${this.baseUrl}/products`);
+  private readonly baseUrl = "https://dummyjson.com/products";
 
   /**
    * Get all products with optional search and pagination
@@ -25,13 +24,14 @@ export class ProductService {
     limit: number = 12,
     skip: number = 0
   ): Observable<ProductsResponse> {
-    const url = new URL(`${this.url.href}/search`);
+    const url = new URL(`${this.baseUrl}/search`);
 
     url.searchParams.set("limit", limit.toString());
     url.searchParams.set("skip", skip.toString());
-    search && url.searchParams.set("q", encodeURIComponent(search));
+    search && url.searchParams.set("q", search);
 
     return this.http.get<ProductsResponse>(url.href).pipe(
+      first(),
       catchError((error): Observable<ProductsResponse> => {
         console.error("Error fetching products:", error);
         return of({ products: [], total: 0, skip: 0, limit: 0 });
@@ -43,7 +43,8 @@ export class ProductService {
    * Get a single product by ID
    */
   public getProduct(id: number): Observable<Product | null> {
-    return this.http.get<Product>(`${this.url.href}/${id}`).pipe(
+    return this.http.get<Product>(`${this.baseUrl}/${id}`).pipe(
+      first(),
       catchError((error): Observable<null> => {
         console.error("Error fetching product:", error);
         return of(null);
@@ -58,14 +59,13 @@ export class ProductService {
   public createProduct(
     product: CreateProductRequest
   ): Observable<Product | null> {
-    return this.http
-      .post<Product>(`${this.url.href}/add`, product)
-      .pipe(
-        catchError((error): Observable<null> => {
-          console.error("Error creating product:", error);
-          return of(null);
-        })
-      );
+    return this.http.post<Product>(`${this.baseUrl}/add`, product).pipe(
+      first(),
+      catchError((error): Observable<null> => {
+        console.error("Error creating product:", error);
+        return of(null);
+      })
+    );
   }
 
   /**
@@ -76,26 +76,25 @@ export class ProductService {
     id: number,
     product: UpdateProductRequest
   ): Observable<Product | null> {
-    return this.http
-      .put<Product>(`${this.url.href}/${id}`, product)
-      .pipe(
-        catchError((error): Observable<null> => {
-          console.error("Error updating product:", error);
-          return of(null);
-        })
-      );
+    return this.http.put<Product>(`${this.baseUrl}/${id}`, product).pipe(
+      first(),
+      catchError((error): Observable<null> => {
+        console.error("Error updating product:", error);
+        return of(null);
+      })
+    );
   }
 
   /**
    * Delete a product
    * Note: DummyJSON API simulates deletion but doesn't persist data
    */
-  public deleteProduct(id: number): Observable<boolean> {
-    return this.http.delete<Product>(`${this.url.href}/${id}`).pipe(
-      map((): boolean => true),
-      catchError((error): Observable<boolean> => {
+  public deleteProduct(id: number): Observable<Product | null> {
+    return this.http.delete<Product>(`${this.baseUrl}/${id}`).pipe(
+      first(),
+      catchError((error): Observable<Product | null> => {
         console.error("Error deleting product:", error);
-        return of(false);
+        return of(null);
       })
     );
   }
@@ -104,16 +103,17 @@ export class ProductService {
    * Get ALL products without pagination (for dashboard calculations)
    */
   public getAllProducts(): Observable<Product[]> {
-    this.url.searchParams.set("limit", "0");
-    return this.http
-      .get<ProductsResponse>(this.url.href)
-      .pipe(
-        map((response): Product[] => response.products),
-        catchError((error): Observable<Product[]> => {
-          console.error("Error fetching all products:", error);
-          return of([]);
-        })
-      );
+    const url = new URL(`${this.baseUrl}`);
+    url.searchParams.set("limit", "0");
+
+    return this.http.get<ProductsResponse>(url.href).pipe(
+      first(),
+      map((response): Product[] => response.products),
+      catchError((error): Observable<Product[]> => {
+        console.error("Error fetching all products:", error);
+        return of([]);
+      })
+    );
   }
 
   /**
@@ -121,8 +121,9 @@ export class ProductService {
    */
   public getCategories(): Observable<string[]> {
     return this.http
-      .get<Record<string, string>[]>(`${this.url.href}/categories`)
+      .get<Record<string, string>[]>(`${this.baseUrl}/categories`)
       .pipe(
+        first(),
         map((categories): string[] => {
           return categories.map((category: any): string => category.slug);
         }),

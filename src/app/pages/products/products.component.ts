@@ -15,7 +15,7 @@ import {
   PaginationState,
   ProductsResponse,
 } from "../../shared/models/product.model";
-import { ProductService } from "../../core/services/product.service";
+import { ProductService } from "./services/product.service";
 import { ProductFormComponent } from "./components/product-form/product-form.component";
 import { ProductCardComponent } from "./components/product-card/product-card.component";
 import { ConfirmDialogComponent } from "../../shared/components/confirm-dialog/confirm-dialog.component";

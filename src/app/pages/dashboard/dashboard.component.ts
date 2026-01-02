@@ -4,7 +4,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { firstValueFrom } from "rxjs";
 
 import { Product } from "../../shared/models/product.model";
-import { ProductService } from "../../core/services/product.service";
+import { ProductService } from "../products/services/product.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface KPIData {

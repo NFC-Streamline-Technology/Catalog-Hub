@@ -24,7 +24,7 @@ import {
   UpdateProductRequest,
   ImageUpload,
 } from "../../../../shared/models/product.model";
-import { ProductService } from "../../../../core/services/product.service";
+import { ProductService } from "../../services/product.service";
 import { ImageUploadComponent } from "../../../../shared/components/image-upload/image-upload.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
