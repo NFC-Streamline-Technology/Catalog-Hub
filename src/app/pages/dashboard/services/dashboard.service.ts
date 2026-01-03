@@ -36,7 +36,7 @@ export class DashboardService {
     return this.http.get<CategoryResponse[]>(`${this.baseUrl}/categories`).pipe(
       first(),
       map((categories): string[] => {
-        return categories.map((category: CategoryResponse): string => category.slug)
+        return categories.map((category): string => category.slug)
       }),
       catchError((error): Observable<string[]> => {
         console.error('Error fetching categories:', error)
