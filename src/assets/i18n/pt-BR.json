@@ -122,6 +122,12 @@
         "categoryRequired": "Categoria é obrigatória",
         "stockRequired": "Estoque é obrigatório",
         "stockMin": "Estoque deve ser maior ou igual a 0"
+      },
+      "errors": {
+        "maxImagesReached": "Máximo de {{max}} imagens permitidas",
+        "invalidImageUrl": "URL de imagem inválida",
+        "onlyImageFiles": "Apenas arquivos de imagem são permitidos",
+        "fileTooLarge": "Arquivo muito grande. Máximo {{max}}"
       }
     }
   }

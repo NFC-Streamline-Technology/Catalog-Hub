@@ -61,19 +61,20 @@ export class ImageUploadComponent implements OnInit {
     input.value = '' // Reset input
   }
 
-  // TODO Translate error messages
   protected addImageByUrl(url: string): void {
     if (!url.trim()) return
 
     this.errorMessage.set('')
 
     if (this.images().length >= this.maxImages()) {
-      this.errorMessage.set(`Máximo de ${this.maxImages()} imagens permitidas`)
+      const translate = this.translate()?.errors?.maxImagesReached
+      const message = translate.replace('{{max}}', this.maxImages().toString())
+      this.errorMessage.set(message)
       return
     }
 
     if (!this.isValidImageUrl(url)) {
-      this.errorMessage.set('URL de imagem inválida')
+      this.errorMessage.set(this.translate()?.errors?.invalidImageUrl)
       return
     }
 
@@ -101,24 +102,26 @@ export class ImageUploadComponent implements OnInit {
     this.translate.set({ ...translate, generic })
   }
 
-  // TODO Translate error messages
   private handleFiles(files: File[]): void {
     this.errorMessage.set('')
     if (this.images().length + files.length > this.maxImages()) {
-      this.errorMessage.set(`Máximo de ${this.maxImages()} imagens permitidas`)
+      const translate = this.translate()?.errors?.maxImagesReached
+      const message = translate.replace('{{max}}', this.maxImages().toString())
+      this.errorMessage.set(message)
       return
     }
 
     files.forEach((file: File): void => {
       if (!file.type.startsWith('image/')) {
-        this.errorMessage.set('Apenas arquivos de imagem são permitidos')
+        this.errorMessage.set(this.translate()?.errors?.onlyImageFiles)
         return
       }
 
       if (file.size > this.maxSizePerImage()) {
-        this.errorMessage.set(
-          `Arquivo muito grande. Máximo ${this.formatFileSize(this.maxSizePerImage())}`
-        )
+        const translate = this.translate()?.errors?.fileTooLarge
+        const formatFileSize = this.formatFileSize(this.maxSizePerImage())
+
+        this.errorMessage.set(translate.replace('{{max}}', formatFileSize))
         return
       }
 

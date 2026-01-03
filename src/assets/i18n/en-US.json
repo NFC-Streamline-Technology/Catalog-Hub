@@ -122,6 +122,12 @@
         "categoryRequired": "Category is required",
         "stockRequired": "Stock is required",
         "stockMin": "Stock must be greater than or equal to 0"
+      },
+      "errors": {
+        "maxImagesReached": "Maximum of {{max}} images allowed",
+        "invalidImageUrl": "Invalid image URL",
+        "onlyImageFiles": "Only image files are allowed",
+        "fileTooLarge": "File too large. Maximum {{max}}"
       }
     }
   }
