@@ -1,0 +1,120 @@
+<div class="space-y-8">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">
+        {{ translate()?.title }}
+      </h1>
+      <p class="text-gray-600 mt-1">
+        {{ translate()?.subtitle }}
+      </p>
+    </div>
+
+    <button class="btn-primary flex items-center space-x-2" (click)="openCreateForm()">
+      <fa-icon [icon]="icons.faPlus" />
+      <span>{{ translate()?.createProduct }}</span>
+    </button>
+  </div>
+
+  <div class="grid grid-cols-5 gap-4 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="flex flex-col sm:flex-row gap-4 col-span-4">
+      <div class="flex-1">
+        <div class="relative">
+          <input
+            type="text"
+            [formControl]="searchControl"
+            [placeholder]="translate()?.searchPlaceholder"
+            class="form-input w-full pl-10 h-10"
+          />
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <fa-icon [icon]="icons.faSearch" class="text-gray-400" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 col-span-1">
+      <fieldset [disabled]="true" class="flex items-center space-x-2 w-full">
+        <select [formControl]="categoryControl" class="form-select">
+          <option value="">
+            {{ translate()?.allCategories }}
+          </option>
+          @for (category of categories(); track $index) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    @if (products().length) {
+      <div class="flex items-center justify-between p-6">
+        <p class="text-gray-600">
+          {{ translate()?.showing }} {{ startItem() }} - {{ endItem() }} {{ translate()?.of }}
+          {{ paginationState().totalItems }}
+          {{ translate()?.products }}
+        </p>
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+          <label>{{ translate()?.totalItems }}</label>
+          <fieldset class="w-20">
+            <select [formControl]="pageSizeControl" class="form-select">
+              <option value="8">8</option>
+              <option value="12">12</option>
+              <option value="24">24</option>
+              <option value="48">48</option>
+            </select>
+          </fieldset>
+        </div>
+      </div>
+    }
+
+    <hr />
+    @if (paginationState().totalItems > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+        @for (product of products(); track product.id) {
+          <app-product-card [product]="product" (edit)="openEditForm(product)" (delete)="openDeleteConfirm(product)" />
+        }
+      </div>
+    } @else {
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+        <div class="text-center">
+          <fa-icon [icon]="icons.faBox" class="text-gray-300 text-8xl mb-6" />
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            {{ translate()?.noProducts }}
+          </h3>
+          <p class="text-gray-600 mb-6">
+            {{ translate()?.noProductsDescription }}
+          </p>
+          <button class="btn-primary" (click)="openCreateForm()">
+            <fa-icon [icon]="icons.faPlus" class="mr-2" />
+            {{ translate()?.createFirstProduct }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <hr />
+
+    @if (showPaginationComponent()) {
+      <app-pagination [pagination]="paginationState()" (pageChanged)="onPageChanged($event)" />
+    }
+  </div>
+
+  <!-- Product Form Modal -->
+  @if (showForm()) {
+    <app-product-form
+      [product]="selectedProduct()"
+      [isVisible]="showForm()"
+      (saved)="onProductSaved()"
+      (cancelled)="onFormCancelled()"
+    />
+  }
+
+  <!-- Delete Confirmation Dialog -->
+  <app-confirm-dialog
+    [isVisible]="showDeleteConfirm()"
+    [message]="translate()?.deleteConfirm ?? ''"
+    (confirmed)="onDeleteConfirmed()"
+    (cancelled)="onDeleteCancelled()"
+  />
+</div>
