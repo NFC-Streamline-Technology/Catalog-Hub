@@ -9,18 +9,17 @@ import {
   inject,
   signal
 } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
-import { firstValueFrom } from 'rxjs'
-
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { ImageUploadComponent } from '../../../../shared/components/image-upload/image-upload.component'
+import { ImageUploadComponent } from '@shared/components/image-upload/image-upload.component'
 import {
   CreateProductRequest,
   ImageUpload,
   Product,
   UpdateProductRequest
-} from '../../../../shared/models/product.model'
+} from '@shared/models/product.model'
+import { firstValueFrom } from 'rxjs'
 import { ProductService } from '../../services/product.service'
 
 @Component({

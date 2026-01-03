@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { LoadingService } from '@core/services/loading.service'
 import { TranslateService } from '@ngx-translate/core'
+import { Product } from '@shared/models/product.model'
 import { firstValueFrom } from 'rxjs'
-import { LoadingService } from 'src/app/core/services/loading.service'
-import { Product } from '../../shared/models/product.model'
 import { DashboardService } from './services/dashboard.service'
 
 interface KPIData {

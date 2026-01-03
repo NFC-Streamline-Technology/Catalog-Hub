@@ -8,13 +8,9 @@ import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/o
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { faBox, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons'
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component'
-import { PaginationComponent } from '../../shared/components/pagination/pagination.component'
-import {
-  PaginationState,
-  Product,
-  ProductsResponse
-} from '../../shared/models/product.model'
+import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component'
+import { PaginationComponent } from '@shared/components/pagination/pagination.component'
+import { PaginationState, Product, ProductsResponse } from '@shared/models/product.model'
 import { ProductCardComponent } from './components/product-card/product-card.component'
 import { ProductFormComponent } from './components/product-form/product-form.component'
 import { ProductService } from './services/product.service'

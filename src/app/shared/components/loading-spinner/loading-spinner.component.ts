@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { LoadingService } from '@core/services/loading.service'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
-import { LoadingService } from '../../../core/services/loading.service'
 
 @Component({
   selector: 'app-loading-spinner',

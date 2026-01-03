@@ -4,8 +4,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { faBox, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { TranslateService } from '@ngx-translate/core'
+import { Product } from '@shared/models/product.model'
 import { firstValueFrom } from 'rxjs'
-import { Product } from '../../../../shared/models/product.model'
 
 @Component({
   selector: 'app-product-card',
