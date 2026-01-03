@@ -97,13 +97,30 @@
       "showing": "Showing",
       "totalItems": "Products per page:",
       "fields": {
-        "title": "Title",
-        "description": "Description",
-        "price": "Price",
-        "category": "Category",
-        "brand": "Brand",
-        "stock": "Stock",
-        "selectCategory": "Select a category"
+        "title": {
+          "label": "Title",
+          "placeholder": "Enter the title"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Enter the description"
+        },
+        "price": {
+          "label": "Price",
+          "placeholder": "Enter the price"
+        },
+        "category": {
+          "label": "Category",
+          "placeholder": "Select a category"
+        },
+        "brand": {
+          "label": "Brand",
+          "placeholder": "Enter the brand"
+        },
+        "stock": {
+          "label": "Stock",
+          "placeholder": "Quantity in stock"
+        }
       },
       "stockStatus": {
         "outOfStock": "Out of Stock",

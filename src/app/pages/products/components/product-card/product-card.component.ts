@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core'
+import { Component, OnInit, inject, input, output, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { faBox, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -17,10 +17,10 @@ import { firstValueFrom } from 'rxjs'
     >
       <!-- Product Image -->
       <div class="relative overflow-hidden rounded-lg mb-4">
-        @if (product.thumbnail) {
+        @if (product().thumbnail) {
           <img
-            [src]="product.thumbnail"
-            [alt]="product.title"
+            [src]="product().thumbnail"
+            [alt]="product().title"
             class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
             (error)="onImageError($event)"
           />
@@ -33,19 +33,18 @@ import { firstValueFrom } from 'rxjs'
         }
 
         <!-- Discount Badge -->
-        @if (product.discountPercentage && product.discountPercentage > 0) {
+        @let discountPercentage = product().discountPercentage;
+        @if (discountPercentage) {
           <div
             class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
           >
-            -{{ product.discountPercentage.toFixed(0) }}%
+            -{{ discountPercentage.toFixed(0) }}%
           </div>
         }
 
         <!-- Stock Badge -->
         <div class="absolute top-2 right-2">
-          <span [class]="getStockBadgeClass()">
-            {{ getStockText() }}
-          </span>
+          <span [class]="getStockBadgeClass()">{{ getStockText() }}</span>
         </div>
       </div>
 
@@ -53,11 +52,11 @@ import { firstValueFrom } from 'rxjs'
       <div class="space-y-3">
         <!-- Title and Category -->
         <div>
-          <h3 class="font-semibold text-gray-900 line-clamp-2 text-lg">
-            {{ product.title }}
+          <h3 class="font-semibold text-gray-900 line-clamp-1 text-lg">
+            {{ product().title }}
           </h3>
           <p class="text-sm text-gray-600 line-clamp-2 mt-1">
-            {{ product.description }}
+            {{ product().description }}
           </p>
         </div>
 
@@ -66,11 +65,15 @@ import { firstValueFrom } from 'rxjs'
           <div class="space-y-1">
             <div class="flex items-baseline space-x-2">
               <span class="text-2xl font-bold text-gray-900">
-                {{ getPriceDisplay(product.price) }}
+                {{ product().price | currency: 'USD' : 'symbol' : '1.2-2' }}
               </span>
-              @if (product.discountPercentage && product.discountPercentage > 0) {
+
+              @if (discountPercentage) {
                 <span class="text-sm text-gray-500 line-through">
-                  {{ getOriginalPrice(product.price, product.discountPercentage) }}
+                  {{
+                    getOriginalPrice(discountPercentage)
+                      | currency: 'USD' : 'symbol' : '1.2-2'
+                  }}
                 </span>
               }
             </div>
@@ -84,29 +87,19 @@ import { firstValueFrom } from 'rxjs'
             (click)="onEdit()"
           >
             <fa-icon [icon]="icons.faEdit" class="mr-1" />
-            {{ translate?.generic?.edit }}
+            {{ translate()?.generic?.edit }}
           </button>
           <button
             class="btn-danger flex-1 text-sm transition-all duration-200 hover:scale-105"
             (click)="onDelete()"
           >
             <fa-icon [icon]="icons.faTrash" class="mr-1" />
-            {{ translate?.generic?.delete }}
+            {{ translate()?.generic?.delete }}
           </button>
         </div>
       </div>
     </div>
-  `,
-  styles: [
-    `
-      .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-    `
-  ]
+  `
 })
 export class ProductCardComponent implements OnInit {
   private readonly translateService = inject(TranslateService)
@@ -120,24 +113,16 @@ export class ProductCardComponent implements OnInit {
       })
   }
 
-  @Input({ required: true }) product!: Product
-  @Output() edit = new EventEmitter<void>()
-  @Output() delete = new EventEmitter<void>()
+  public readonly product = input.required<Product>()
+  public readonly edit = output<void>()
+  public readonly delete = output<void>()
+
+  protected readonly translate = signal<any>(null)
 
   protected readonly icons = { faEdit, faTrash, faBox }
 
-  protected translate: any
-
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()
-  }
-
-  private async buildTranslate(): Promise<void> {
-    const location = 'pages.products'
-    const translate = await firstValueFrom(this.translateService.get(location))
-    const generic = await firstValueFrom(this.translateService.get('generic'))
-
-    this.translate = { ...translate, generic }
   }
 
   protected onEdit(): void {
@@ -150,39 +135,38 @@ export class ProductCardComponent implements OnInit {
 
   protected onImageError(event: Event): void {
     const target = event.target as HTMLImageElement
-    target.style.display = 'none'
+    target.src = 'https://cdn.dummyjson.com/error.webp'
   }
 
-  protected getStarArray(rating: number): number[] {
-    return Array(Math.floor(rating)).fill(0)
-  }
-
-  protected getPriceDisplay(price: number): string {
-    return `$${price.toFixed(2)}`
-  }
-
-  protected getOriginalPrice(price: number, discountPercentage: number): string {
-    const originalPrice = price / (1 - discountPercentage / 100)
-    return `$${originalPrice.toFixed(2)}`
+  protected getOriginalPrice(discountPercentage: number): number {
+    const originalPrice = this.product().price / (1 - discountPercentage / 100)
+    return originalPrice
   }
 
   protected getStockBadgeClass(): string {
-    const stock = this.product.stock
-    if (stock === 0) {
-      return 'bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full'
-    } else if (stock <= 10) {
-      return 'bg-yellow-500 text-white text-xs font-medium px-2 py-1 rounded-full'
-    } else {
-      return 'bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full'
-    }
+    const stock = this.product().stock
+    const defaultClass = 'text-white text-xs font-medium px-2 py-1 rounded-full'
+
+    const stockConfig = [
+      { condition: stock === 0, class: `bg-red-500 ${defaultClass}` },
+      { condition: stock <= 10, class: `bg-yellow-500 ${defaultClass}` },
+      { condition: stock > 10, class: `bg-green-500 ${defaultClass}` }
+    ]
+
+    const match = stockConfig.find((config): boolean => config.condition)
+
+    return match?.class ?? ''
   }
 
   protected getStockText(): string {
-    const translate = this.translate?.stockStatus
-    const stock = this.product.stock
+    const translate = this.translate()?.stockStatus
+    const stock = this.product().stock
 
     const stockConfig = [
-      { condition: stock === 0, text: translate?.outOfStock },
+      {
+        condition: stock === 0,
+        text: translate?.outOfStock
+      },
       {
         condition: stock === 1,
         text: translate?.inStockSingle?.replace('{{stock}}', stock.toString())
@@ -200,5 +184,13 @@ export class ProductCardComponent implements OnInit {
 
     const match = stockConfig.find((config): boolean => config.condition)
     return match?.text ?? ''
+  }
+
+  private async buildTranslate(): Promise<void> {
+    const location = 'pages.products'
+    const translate = await firstValueFrom(this.translateService.get(location))
+    const generic = await firstValueFrom(this.translateService.get('generic'))
+
+    this.translate.set({ ...translate, generic })
   }
 }

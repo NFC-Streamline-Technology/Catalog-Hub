@@ -97,13 +97,30 @@
       "showing": "Mostrando",
       "totalItems": "Produtos por página:",
       "fields": {
-        "title": "Título",
-        "description": "Descrição",
-        "price": "Preço",
-        "category": "Categoria",
-        "brand": "Marca",
-        "stock": "Estoque",
-        "selectCategory": "Selecione uma categoria"
+        "title": {
+          "label": "Título",
+          "placeholder": "Digite o título"
+        },
+        "description": {
+          "label": "Descrição",
+          "placeholder": "Digite a descrição"
+        },
+        "price": {
+          "label": "Preço",
+          "placeholder": "Digite o preço"
+        },
+        "category": {
+          "label": "Categoria",
+          "placeholder": "Selecione uma categoria"
+        },
+        "brand": {
+          "label": "Marca",
+          "placeholder": "Digite a marca"
+        },
+        "stock": {
+          "label": "Estoque",
+          "placeholder": "Quantidade em estoque"
+        }
       },
       "stockStatus": {
         "outOfStock": "Esgotado",
