@@ -4,8 +4,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
 import { LoadingService } from 'src/app/core/services/loading.service'
-import { Product } from '../products/models/product.model'
-import { ProductService } from '../products/services/product.service'
+import { Product } from '../../shared/models/product.model'
+import { DashboardService } from './services/dashboard.service'
 
 interface KPIData {
   totalProducts: number
@@ -373,7 +373,7 @@ export class DashboardComponent implements OnInit {
       })
   }
 
-  private readonly productService = inject(ProductService)
+  private readonly dashboardService = inject(DashboardService)
   private readonly translateService = inject(TranslateService)
   private readonly loadingService = inject(LoadingService)
 
@@ -471,7 +471,7 @@ export class DashboardComponent implements OnInit {
       this.hasError.set(false)
 
       const products: Product[] = await firstValueFrom(
-        this.productService.getAllProducts()
+        this.dashboardService.getAllProducts()
       )
       this.products.set(products)
     } catch (error: unknown) {
