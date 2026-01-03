@@ -3,6 +3,7 @@ import { Component, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { LoadingService } from '@core/services/loading.service'
 import { TranslateService } from '@ngx-translate/core'
+import { GenericTranslations } from '@shared/models/translate.model'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
@@ -41,7 +42,7 @@ export class LoadingSpinnerComponent implements OnInit {
   }
 
   protected readonly isLoading = this.loadingService.isLoading
-  protected readonly translate = signal<any>(null)
+  protected readonly translate = signal<GenericTranslations | null>(null)
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()

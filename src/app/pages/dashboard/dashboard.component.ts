@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { LoadingService } from '@core/services/loading.service'
 import { TranslateService } from '@ngx-translate/core'
 import { Product } from '@shared/models/product.model'
+import { DashboardTranslations } from '@shared/models/translate.model'
 import { firstValueFrom } from 'rxjs'
 import { DashboardService } from './services/dashboard.service'
 
@@ -377,13 +378,11 @@ export class DashboardComponent implements OnInit {
       })
   }
 
-  // Signals
   protected readonly products = signal<Product[]>([])
   protected readonly hasError = signal<boolean>(false)
-  protected readonly translate = signal<any>(null)
+  protected readonly translate = signal<DashboardTranslations | null>(null)
   protected readonly isLoading = this.loadingService.isLoading
 
-  // Computed values
   protected readonly kpiData = computed<KPIData>((): KPIData => {
     const products: Product[] = this.products()
 
@@ -415,7 +414,6 @@ export class DashboardComponent implements OnInit {
       uniqueCategories
     }
   })
-
   protected readonly categoriesData = computed<CategoryData[]>((): CategoryData[] => {
     const products: Product[] = this.products()
 
@@ -598,13 +596,9 @@ export class DashboardComponent implements OnInit {
   }
 
   private async buildTranslate(): Promise<void> {
-    try {
-      const translate = await firstValueFrom(this.translateService.get('pages.dashboard'))
-      const generic = await firstValueFrom(this.translateService.get('generic'))
+    const translate = await firstValueFrom(this.translateService.get('pages.dashboard'))
+    const generic = await firstValueFrom(this.translateService.get('generic'))
 
-      this.translate.set({ ...translate, generic })
-    } catch (error: unknown) {
-      console.error('Error loading translations:', error)
-    }
+    this.translate.set({ ...translate, generic })
   }
 }

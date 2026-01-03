@@ -5,6 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { faBox, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { TranslateService } from '@ngx-translate/core'
 import { Product } from '@shared/models/product.model'
+import { ProductsTranslations } from '@shared/models/translate.model'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
@@ -38,7 +39,8 @@ import { firstValueFrom } from 'rxjs'
           <div
             class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
           >
-            -{{ discountPercentage.toFixed(0) }}%
+            @let fixedPercentage = discountPercentage < 1 ? 2 : 0;
+            -{{ discountPercentage.toFixed(fixedPercentage) }}%
           </div>
         }
 
@@ -117,7 +119,7 @@ export class ProductCardComponent implements OnInit {
   public readonly edit = output<void>()
   public readonly delete = output<void>()
 
-  protected readonly translate = signal<any>(null)
+  protected readonly translate = signal<ProductsTranslations | null>(null)
 
   protected readonly icons = { faEdit, faTrash, faBox }
 

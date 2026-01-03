@@ -10,6 +10,7 @@ import {
   Product,
   UpdateProductRequest
 } from '@shared/models/product.model'
+import { ProductsTranslations } from '@shared/models/translate.model'
 import { firstValueFrom } from 'rxjs'
 import { ProductService } from '../../services/product.service'
 
@@ -285,7 +286,7 @@ export class ProductFormComponent implements OnInit {
 
   protected readonly categories = signal<string[]>([])
   protected readonly isSubmitting = signal<boolean>(false)
-  protected readonly translate = signal<any>(null)
+  protected readonly translate = signal<ProductsTranslations | null>(null)
   protected readonly productImages = signal<ImageUpload[]>([])
 
   protected readonly productForm: FormGroup = this.buildForm()

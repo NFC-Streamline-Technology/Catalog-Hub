@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { Component, computed, inject, OnInit, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
@@ -11,6 +11,7 @@ import { faBox, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component'
 import { PaginationComponent } from '@shared/components/pagination/pagination.component'
 import { PaginationState, Product, ProductsResponse } from '@shared/models/product.model'
+import type { ProductsTranslations } from '@shared/models/translate.model'
 import { ProductCardComponent } from './components/product-card/product-card.component'
 import { ProductFormComponent } from './components/product-form/product-form.component'
 import { ProductService } from './services/product.service'
@@ -32,10 +33,10 @@ import { ProductService } from './services/product.service'
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">
-            {{ translate?.title }}
+            {{ translate()?.title }}
           </h1>
           <p class="text-gray-600 mt-1">
-            {{ translate?.subtitle }}
+            {{ translate()?.subtitle }}
           </p>
         </div>
 
@@ -44,7 +45,7 @@ import { ProductService } from './services/product.service'
           (click)="openCreateForm()"
         >
           <fa-icon [icon]="icons.faPlus" />
-          <span>{{ translate?.createProduct }}</span>
+          <span>{{ translate()?.createProduct }}</span>
         </button>
       </div>
 
@@ -57,7 +58,7 @@ import { ProductService } from './services/product.service'
               <input
                 type="text"
                 [formControl]="searchControl"
-                [placeholder]="translate?.searchPlaceholder"
+                [placeholder]="translate()?.searchPlaceholder"
                 class="form-input w-full pl-10 h-10"
               />
               <div
@@ -73,7 +74,7 @@ import { ProductService } from './services/product.service'
           <fieldset [disabled]="true" class="flex items-center space-x-2 w-full">
             <select [formControl]="categoryControl" class="form-select">
               <option value="">
-                {{ translate?.allCategories }}
+                {{ translate()?.allCategories }}
               </option>
               @for (category of categories(); track $index) {
                 <option [value]="category">{{ category }}</option>
@@ -87,12 +88,12 @@ import { ProductService } from './services/product.service'
         @if (products().length) {
           <div class="flex items-center justify-between p-6">
             <p class="text-gray-600">
-              {{ translate?.showing }} {{ getStartItem() }} - {{ getEndItem() }}
-              {{ translate?.of }} {{ paginationState().totalItems }}
-              {{ translate?.products }}
+              {{ translate()?.showing }} {{ startItem() }} - {{ endItem() }}
+              {{ translate()?.of }} {{ paginationState().totalItems }}
+              {{ translate()?.products }}
             </p>
             <div class="flex items-center gap-2 text-sm text-gray-500">
-              <label>{{ translate?.totalItems }}</label>
+              <label>{{ translate()?.totalItems }}</label>
               <fieldset class="w-20">
                 <select [formControl]="pageSizeControl" class="form-select">
                   <option value="8">8</option>
@@ -123,14 +124,14 @@ import { ProductService } from './services/product.service'
             <div class="text-center">
               <fa-icon [icon]="icons.faBox" class="text-gray-300 text-8xl mb-6" />
               <h3 class="text-xl font-semibold text-gray-900 mb-2">
-                {{ translate?.noProducts }}
+                {{ translate()?.noProducts }}
               </h3>
               <p class="text-gray-600 mb-6">
-                {{ translate?.noProductsDescription }}
+                {{ translate()?.noProductsDescription }}
               </p>
               <button class="btn-primary" (click)="openCreateForm()">
                 <fa-icon [icon]="icons.faPlus" class="mr-2" />
-                {{ translate?.createFirstProduct }}
+                {{ translate()?.createFirstProduct }}
               </button>
             </div>
           </div>
@@ -151,7 +152,7 @@ import { ProductService } from './services/product.service'
         <app-product-form
           [product]="selectedProduct()"
           [isVisible]="showForm()"
-          (saved)="onProductSaved($event)"
+          (saved)="onProductSaved()"
           (cancelled)="onFormCancelled()"
         />
       }
@@ -159,7 +160,7 @@ import { ProductService } from './services/product.service'
       <!-- Delete Confirmation Dialog -->
       <app-confirm-dialog
         [isVisible]="showDeleteConfirm()"
-        [message]="translate?.deleteConfirm ?? ''"
+        [message]="translate()?.deleteConfirm ?? ''"
         (confirmed)="onDeleteConfirmed()"
         (cancelled)="onDeleteCancelled()"
       />
@@ -182,13 +183,13 @@ export class ProductsComponent implements OnInit {
       })
   }
 
-  // Signals
   protected readonly categories = signal<string[]>([])
   protected readonly products = signal<Product[]>([])
   protected readonly showForm = signal<boolean>(false)
   protected readonly showPaginationComponent = signal<boolean>(true)
   protected readonly showDeleteConfirm = signal<boolean>(false)
   protected readonly selectedProduct = signal<Product | null>(null)
+  protected readonly translate = signal<ProductsTranslations | null>(null)
   protected readonly paginationState = signal<PaginationState>({
     currentPage: 1,
     pageSize: 12,
@@ -196,10 +197,20 @@ export class ProductsComponent implements OnInit {
     totalPages: 0
   })
 
-  protected translate: any
+  protected readonly startItem = computed<number>((): number => {
+    const pagination = this.paginationState()
+    return (pagination.currentPage - 1) * pagination.pageSize + 1
+  })
+
+  protected readonly endItem = computed<number>((): number => {
+    const pagination = this.paginationState()
+    const end = pagination.currentPage * pagination.pageSize
+
+    return Math.min(end, pagination.totalItems)
+  })
+
   protected readonly icons = { faPlus, faSearch, faBox }
 
-  // Search state
   protected readonly searchControl = new FormControl<string>('')
   protected readonly categoryControl = new FormControl<string>('')
   protected readonly pageSizeControl = new FormControl<number>(
@@ -209,81 +220,6 @@ export class ProductsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()
     await this.loadProducts()
-  }
-
-  private async buildTranslate(): Promise<void> {
-    const location = 'pages.products'
-    const translate = await firstValueFrom(this.translateService.get(location))
-    const generic = await firstValueFrom(this.translateService.get('generic'))
-
-    this.translate = { ...translate, generic }
-  }
-
-  private async loadProducts(searching: boolean = false): Promise<void> {
-    try {
-      const pagination: PaginationState = this.paginationState()
-      const skip: number = (pagination.currentPage - 1) * pagination.pageSize
-      const getProducts = this.productService.getProducts(
-        this.searchControl.value?.trim() || '',
-        pagination.pageSize,
-        searching ? 0 : skip
-      )
-
-      const response: ProductsResponse = await firstValueFrom(getProducts)
-      this.products.set(response.products)
-      this.paginationState.update((state): PaginationState => {
-        return {
-          ...state,
-          currentPage: searching ? 1 : state.currentPage,
-          totalItems: response.total,
-          totalPages: Math.ceil(response.total / state.pageSize)
-        }
-      })
-    } catch (error: unknown) {
-      console.error('Error searching products:', error)
-    }
-  }
-
-  private setupSearch(): void {
-    this.searchControl.valueChanges
-      .pipe(
-        startWith(''),
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((): Promise<void> => {
-          this.resetPagination()
-
-          return this.loadProducts(true)
-        })
-      )
-      .pipe(takeUntilDestroyed())
-      .subscribe()
-  }
-
-  private setupPageSizeChange(): void {
-    const statePageSize = this.paginationState().pageSize
-    this.pageSizeControl.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((pageSize: number | null): void => {
-        this.paginationState.update(
-          (state): PaginationState => ({
-            ...state,
-            pageSize: pageSize ?? statePageSize,
-            currentPage: 1
-          })
-        )
-
-        this.loadProducts()
-      })
-  }
-
-  private resetPagination(): void {
-    this.paginationState.update(
-      (state: PaginationState): PaginationState => ({
-        ...state,
-        currentPage: 1
-      })
-    )
   }
 
   protected openCreateForm(): void {
@@ -301,7 +237,7 @@ export class ProductsComponent implements OnInit {
     this.showDeleteConfirm.set(true)
   }
 
-  protected async onProductSaved(product: Product): Promise<void> {
+  protected async onProductSaved(): Promise<void> {
     this.showForm.set(false)
     this.selectedProduct.set(null)
 
@@ -347,14 +283,79 @@ export class ProductsComponent implements OnInit {
     await this.loadProducts()
   }
 
-  protected getStartItem(): number {
-    const pagination = this.paginationState()
-    return (pagination.currentPage - 1) * pagination.pageSize + 1
+  private async loadProducts(searching: boolean = false): Promise<void> {
+    try {
+      const pagination: PaginationState = this.paginationState()
+      const skip: number = (pagination.currentPage - 1) * pagination.pageSize
+      const getProducts = this.productService.getProducts(
+        this.searchControl.value?.trim() || '',
+        pagination.pageSize,
+        searching ? 0 : skip
+      )
+
+      const response: ProductsResponse = await firstValueFrom(getProducts)
+      this.products.set(response.products)
+      this.paginationState.update((state): PaginationState => {
+        return {
+          ...state,
+          currentPage: searching ? 1 : state.currentPage,
+          totalItems: response.total,
+          totalPages: Math.ceil(response.total / state.pageSize)
+        }
+      })
+    } catch (error: unknown) {
+      console.error('Error searching products:', error)
+    }
   }
 
-  protected getEndItem(): number {
-    const pagination = this.paginationState()
-    const end = pagination.currentPage * pagination.pageSize
-    return Math.min(end, pagination.totalItems)
+  private setupSearch(): void {
+    this.searchControl.valueChanges
+      .pipe(
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((): Promise<void> => {
+          this.resetPagination()
+
+          return this.loadProducts(true)
+        })
+      )
+      .pipe(takeUntilDestroyed())
+      .subscribe()
+  }
+
+  private setupPageSizeChange(): void {
+    this.pageSizeControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((pageSize: number | null): void => {
+        const statePageSize = this.paginationState().pageSize
+
+        this.paginationState.update((state): PaginationState => {
+          return {
+            ...state,
+            pageSize: pageSize ?? statePageSize,
+            currentPage: 1
+          }
+        })
+
+        this.loadProducts()
+      })
+  }
+
+  private resetPagination(): void {
+    this.paginationState.update((state: PaginationState): PaginationState => {
+      return {
+        ...state,
+        currentPage: 1
+      }
+    })
+  }
+
+  private async buildTranslate(): Promise<void> {
+    const location = 'pages.products'
+    const translate = await firstValueFrom(this.translateService.get(location))
+    const generic = await firstValueFrom(this.translateService.get('generic'))
+
+    this.translate.set({ ...translate, generic })
   }
 }

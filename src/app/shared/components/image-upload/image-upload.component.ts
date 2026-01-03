@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
 import { ImageUpload } from '../../models/product.model'
+import type { ProductsTranslations } from '../../models/translate.model'
 
 @Component({
   selector: 'app-image-upload',
@@ -28,7 +29,7 @@ export class ImageUploadComponent implements OnInit {
   public readonly maxSizePerImage = input<number>(10 * 1024 * 1024) // 10MB
   public readonly imagesChange = output<ImageUpload[]>()
 
-  protected readonly translate = signal<any>(null)
+  protected readonly translate = signal<ProductsTranslations | null>(null)
   protected readonly dragOver = signal<boolean>(false)
   protected readonly errorMessage = signal<string>('')
 
@@ -68,13 +69,13 @@ export class ImageUploadComponent implements OnInit {
 
     if (this.images().length >= this.maxImages()) {
       const translate = this.translate()?.errors?.maxImagesReached
-      const message = translate.replace('{{max}}', this.maxImages().toString())
-      this.errorMessage.set(message)
+      const message = translate?.replace('{{max}}', this.maxImages().toString())
+      this.errorMessage.set(message ?? '')
       return
     }
 
     if (!this.isValidImageUrl(url)) {
-      this.errorMessage.set(this.translate()?.errors?.invalidImageUrl)
+      this.errorMessage.set(this.translate()?.errors?.invalidImageUrl ?? '')
       return
     }
 
@@ -106,14 +107,14 @@ export class ImageUploadComponent implements OnInit {
     this.errorMessage.set('')
     if (this.images().length + files.length > this.maxImages()) {
       const translate = this.translate()?.errors?.maxImagesReached
-      const message = translate.replace('{{max}}', this.maxImages().toString())
-      this.errorMessage.set(message)
+      const message = translate?.replace('{{max}}', this.maxImages().toString())
+      this.errorMessage.set(message ?? '')
       return
     }
 
     files.forEach((file: File): void => {
       if (!file.type.startsWith('image/')) {
-        this.errorMessage.set(this.translate()?.errors?.onlyImageFiles)
+        this.errorMessage.set(this.translate()?.errors?.onlyImageFiles ?? '')
         return
       }
 
@@ -121,7 +122,7 @@ export class ImageUploadComponent implements OnInit {
         const translate = this.translate()?.errors?.fileTooLarge
         const formatFileSize = this.formatFileSize(this.maxSizePerImage())
 
-        this.errorMessage.set(translate.replace('{{max}}', formatFileSize))
+        this.errorMessage.set(translate?.replace('{{max}}', formatFileSize) ?? '')
         return
       }
 

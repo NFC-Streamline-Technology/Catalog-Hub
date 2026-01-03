@@ -16,14 +16,14 @@
             routerLinkActive="text-primary-600 border-b-2 border-primary-600"
             class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors duration-200"
           >
-            Dashboard
+            {{ translate()?.nav?.dashboard }}
           </a>
           <a
             routerLink="/products"
             routerLinkActive="text-primary-600 border-b-2 border-primary-600"
             class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors duration-200"
           >
-            {{ translate()?.title || 'Produtos' }}
+            {{ translate()?.nav?.products }}
           </a>
         </nav>
       </div>

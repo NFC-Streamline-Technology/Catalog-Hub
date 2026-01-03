@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
+import { CategoryResponse } from '@shared/models/category.model'
 import { Product, ProductsResponse } from '@shared/models/product.model'
 import { Observable, of } from 'rxjs'
 import { catchError, first, map } from 'rxjs/operators'
@@ -32,10 +33,10 @@ export class DashboardService {
    * Get product categories
    */
   public getCategories(): Observable<string[]> {
-    return this.http.get<Record<string, string>[]>(`${this.baseUrl}/categories`).pipe(
+    return this.http.get<CategoryResponse[]>(`${this.baseUrl}/categories`).pipe(
       first(),
       map((categories): string[] => {
-        return categories.map((category: any): string => category.slug)
+        return categories.map((category: CategoryResponse): string => category.slug)
       }),
       catchError((error): Observable<string[]> => {
         console.error('Error fetching categories:', error)

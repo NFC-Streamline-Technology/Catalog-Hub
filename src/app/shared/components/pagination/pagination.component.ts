@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, inject, input, output, signal } from '@angular/core'
+import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateService } from '@ngx-translate/core'
+import { PaginationTranslations } from '@shared/models/translate.model'
 import { firstValueFrom } from 'rxjs'
 import { PaginationState } from '../../models/product.model'
 
@@ -33,9 +34,9 @@ import { PaginationState } from '../../models/product.model'
           <div>
             <p class="text-sm text-gray-700">
               {{ translate()?.showing }}
-              <span class="font-medium">{{ startItem }}</span>
+              <span class="font-medium">{{ startItem() }}</span>
               {{ translate()?.to }}
-              <span class="font-medium">{{ endItem }}</span>
+              <span class="font-medium">{{ endItem() }}</span>
               {{ translate()?.of }}
               <span class="font-medium">{{ pagination().totalItems }}</span>
               {{ translate()?.results }}
@@ -71,7 +72,7 @@ import { PaginationState } from '../../models/product.model'
               @for (page of getVisiblePages(); track $index) {
                 <button
                   (click)="onPageChange(page)"
-                  [class]="getPageButtonClass(page)"
+                  [class]="pageButtonClass(page)"
                   [disabled]="page === -1"
                 >
                   {{ page === -1 ? '...' : page }}
@@ -120,22 +121,19 @@ export class PaginationComponent implements OnInit {
   public readonly pagination = input.required<PaginationState>()
   public readonly pageChanged = output<number>()
 
-  protected readonly translate = signal<any>(null)
+  protected readonly translate = signal<PaginationTranslations | null>(null)
 
-  async ngOnInit(): Promise<void> {
-    await this.buildTranslate()
-  }
+  protected readonly startItem = computed<number>((): number => {
+    const pagination = this.pagination()
+    return (pagination.currentPage - 1) * pagination.pageSize + 1
+  })
+  protected readonly endItem = computed<number>((): number => {
+    const pagination = this.pagination()
+    const end = pagination.currentPage * pagination.pageSize
 
-  protected onPageChange(page: number): void {
-    const isPageValid = page >= 1 && page <= this.pagination().totalPages
-    const isCurrentPage = page === this.pagination().currentPage
-
-    if (isPageValid && !isCurrentPage) {
-      this.pageChanged.emit(page)
-    }
-  }
-
-  protected getVisiblePages(): number[] {
+    return Math.min(end, pagination.totalItems)
+  })
+  protected readonly getVisiblePages = computed<number[]>((): number[] => {
     const totalPages: number = this.pagination().totalPages
     const currentPage: number = this.pagination().currentPage
     const pages: number[] = []
@@ -172,9 +170,22 @@ export class PaginationComponent implements OnInit {
     pages.push(ellipsis, totalPages)
 
     return pages
+  })
+
+  async ngOnInit(): Promise<void> {
+    await this.buildTranslate()
   }
 
-  protected getPageButtonClass(page: number): string {
+  protected onPageChange(page: number): void {
+    const isPageValid = page >= 1 && page <= this.pagination().totalPages
+    const isCurrentPage = page === this.pagination().currentPage
+
+    if (isPageValid && !isCurrentPage) {
+      this.pageChanged.emit(page)
+    }
+  }
+
+  protected pageButtonClass(page: number): string {
     const defaultClass = `relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300`
 
     const isEllipsis = page === -1
@@ -191,18 +202,8 @@ export class PaginationComponent implements OnInit {
   }
 
   private async buildTranslate(): Promise<void> {
-    const generic = await firstValueFrom(this.translateService.get('generic'))
-    const pagination = await firstValueFrom(this.translateService.get('pagination'))
+    const translate = await firstValueFrom(this.translateService.get('pagination'))
 
-    this.translate.set({ ...generic, ...pagination })
-  }
-
-  protected get startItem(): number {
-    return (this.pagination().currentPage - 1) * this.pagination().pageSize + 1
-  }
-
-  protected get endItem(): number {
-    const end = this.pagination().currentPage * this.pagination().pageSize
-    return Math.min(end, this.pagination().totalItems)
+    this.translate.set(translate)
   }
 }

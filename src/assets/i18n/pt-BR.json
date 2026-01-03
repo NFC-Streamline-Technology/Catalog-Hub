@@ -31,6 +31,12 @@
     "firstPage": "Primeira página",
     "lastPage": "Última página"
   },
+  "header": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Catálogo de Produtos"
+    }
+  },
   "pages": {
     "dashboard": {
       "title": "Dashboard",

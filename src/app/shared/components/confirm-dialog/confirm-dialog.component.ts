@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, OnInit, inject, input, output, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateService } from '@ngx-translate/core'
+import { ProductsTranslations } from '@shared/models/translate.model'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
@@ -27,7 +28,7 @@ export class ConfirmDialogComponent implements OnInit {
   public readonly confirmed = output<void>()
   public readonly cancelled = output<void>()
 
-  protected readonly translate = signal<any>(null)
+  protected readonly translate = signal<ProductsTranslations | null>(null)
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()

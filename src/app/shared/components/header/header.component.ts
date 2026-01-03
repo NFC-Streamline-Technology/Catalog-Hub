@@ -3,6 +3,7 @@ import { Component, OnInit, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
+import { HeaderTranslations } from '@shared/models/translate.model'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
@@ -23,7 +24,7 @@ export class HeaderComponent implements OnInit {
       })
   }
 
-  protected readonly translate = signal<any>(null)
+  protected readonly translate = signal<HeaderTranslations | null>(null)
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()
@@ -36,12 +37,8 @@ export class HeaderComponent implements OnInit {
   }
 
   private async buildTranslate(): Promise<void> {
-    try {
-      const translate = await firstValueFrom(this.translateService.get('pages.products'))
+    const translate = await firstValueFrom(this.translateService.get('header'))
 
-      this.translate.set({ ...translate })
-    } catch (error: unknown) {
-      console.error('Error loading translations:', error)
-    }
+    this.translate.set({ ...translate })
   }
 }
