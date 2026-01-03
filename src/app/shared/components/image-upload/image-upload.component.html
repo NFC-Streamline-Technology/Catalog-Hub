@@ -33,14 +33,7 @@
           class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
         >
           <span>{{ translate?.uploadFile }}</span>
-          <input
-            #fileInput
-            type="file"
-            class="sr-only"
-            multiple
-            accept="image/*"
-            (change)="onFileSelected($event)"
-          />
+          <input #fileInput type="file" class="sr-only" multiple accept="image/*" (change)="onFileSelected($event)" />
         </label>
         <p class="pl-1">{{ translate?.orDragDrop }}</p>
       </div>
@@ -51,50 +44,33 @@
   </fieldset>
 
   <!-- Image Preview Grid -->
-  <div
-    *ngIf="images().length > 0"
-    class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-  >
-    <div
-      *ngFor="let image of images(); let i = index"
-      class="relative group bg-gray-100 rounded-lg overflow-hidden aspect-square"
-    >
-      <img
-        [src]="image.url"
-        [alt]="'Image ' + (i + 1)"
-        class="w-full h-full object-cover"
-      />
+  @if (images().length > 0) {
+    <div class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      @for (image of images(); track $index) {
+        <div class="relative group bg-gray-100 rounded-lg overflow-hidden aspect-square">
+          <img [src]="image.url" [alt]="'Image ' + ($index + 1)" class="w-full h-full object-cover" />
 
-      <!-- Remove button -->
-      <button
-        type="button"
-        (click)="removeImage(i)"
-        class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
-      >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
-      </button>
+          <!-- Remove button -->
+          <button
+            type="button"
+            (click)="removeImage($index)"
+            class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
 
-      <!-- Primary indicator -->
-      <div
-        *ngIf="i === 0"
-        class="absolute bottom-2 left-2 bg-primary-600 text-white text-xs px-2 py-1 rounded"
-      >
-        {{ translate?.primary || "Principal" }}
-      </div>
+          <!-- Primary indicator -->
+          @if ($index === 0) {
+            <div class="absolute bottom-2 left-2 bg-primary-600 text-white text-xs px-2 py-1 rounded">
+              {{ translate?.primary || 'Principal' }}
+            </div>
+          }
+        </div>
+      }
     </div>
-  </div>
+  }
 
   <!-- URL Input for manual addition -->
   <fieldset class="mt-4">
@@ -109,18 +85,16 @@
         class="form-input flex-1"
         (keydown.enter)="addImageByUrl(urlInput.value); urlInput.value = ''"
       />
-      <button
-        type="button"
-        (click)="addImageByUrl(urlInput.value); urlInput.value = ''"
-        class="btn-secondary"
-      >
+      <button type="button" (click)="addImageByUrl(urlInput.value); urlInput.value = ''" class="btn-secondary">
         {{ translate?.generic?.add }}
       </button>
     </div>
   </fieldset>
 
   <!-- Error messages -->
-  <div *ngIf="errorMessage" class="mt-2 text-red-600 text-sm">
-    {{ errorMessage }}
-  </div>
+  @if (errorMessage) {
+    <div class="mt-2 text-red-600 text-sm">
+      {{ errorMessage }}
+    </div>
+  }
 </fieldset>

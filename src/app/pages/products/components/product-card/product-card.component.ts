@@ -1,21 +1,14 @@
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  OnInit,
-  inject,
-} from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { TranslateService } from "@ngx-translate/core";
-import { firstValueFrom } from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { faBox, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Product } from "../../../../shared/models/product.model";
+import { CommonModule } from '@angular/common'
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import { faBox, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { TranslateService } from '@ngx-translate/core'
+import { firstValueFrom } from 'rxjs'
+import { Product } from '../../../../shared/models/product.model'
 
 @Component({
-  selector: "app-product-card",
+  selector: 'app-product-card',
   standalone: true,
   imports: [CommonModule, FontAwesomeModule],
   template: `
@@ -24,28 +17,28 @@ import { Product } from "../../../../shared/models/product.model";
     >
       <!-- Product Image -->
       <div class="relative overflow-hidden rounded-lg mb-4">
-        @if(product.thumbnail){
-        <img
-          [src]="product.thumbnail"
-          [alt]="product.title"
-          class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-          (error)="onImageError($event)"
-        />
+        @if (product.thumbnail) {
+          <img
+            [src]="product.thumbnail"
+            [alt]="product.title"
+            class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+            (error)="onImageError($event)"
+          />
         } @else {
-        <div
-          class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
-        >
-          <fa-icon [icon]="icons.faBox" class="text-gray-400 text-4xl" />
-        </div>
+          <div
+            class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+          >
+            <fa-icon [icon]="icons.faBox" class="text-gray-400 text-4xl" />
+          </div>
         }
 
         <!-- Discount Badge -->
-        @if(product.discountPercentage && product.discountPercentage > 0){
-        <div
-          class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
-        >
-          -{{ product.discountPercentage.toFixed(0) }}%
-        </div>
+        @if (product.discountPercentage && product.discountPercentage > 0) {
+          <div
+            class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+          >
+            -{{ product.discountPercentage.toFixed(0) }}%
+          </div>
         }
 
         <!-- Stock Badge -->
@@ -75,13 +68,10 @@ import { Product } from "../../../../shared/models/product.model";
               <span class="text-2xl font-bold text-gray-900">
                 {{ getPriceDisplay(product.price) }}
               </span>
-              @if(product.discountPercentage && product.discountPercentage > 0)
-              {
-              <span class="text-sm text-gray-500 line-through">
-                {{
-                  getOriginalPrice(product.price, product.discountPercentage)
-                }}
-              </span>
+              @if (product.discountPercentage && product.discountPercentage > 0) {
+                <span class="text-sm text-gray-500 line-through">
+                  {{ getOriginalPrice(product.price, product.discountPercentage) }}
+                </span>
               }
             </div>
           </div>
@@ -115,8 +105,8 @@ import { Product } from "../../../../shared/models/product.model";
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-    `,
-  ],
+    `
+  ]
 })
 export class ProductCardComponent implements OnInit {
   constructor() {
@@ -124,94 +114,91 @@ export class ProductCardComponent implements OnInit {
     this.translateService.onLangChange
       .pipe(takeUntilDestroyed())
       .subscribe(async (): Promise<void> => {
-        await this.buildTranslate();
-      });
+        await this.buildTranslate()
+      })
   }
 
-  @Input({ required: true }) product!: Product;
-  @Output() edit = new EventEmitter<void>();
-  @Output() delete = new EventEmitter<void>();
+  @Input({ required: true }) product!: Product
+  @Output() edit = new EventEmitter<void>()
+  @Output() delete = new EventEmitter<void>()
 
-  protected readonly icons = { faEdit, faTrash, faBox };
+  protected readonly icons = { faEdit, faTrash, faBox }
 
-  protected translate: any;
+  protected translate: any
 
-  private translateService = inject(TranslateService);
+  private translateService = inject(TranslateService)
 
   async ngOnInit(): Promise<void> {
-    await this.buildTranslate();
+    await this.buildTranslate()
   }
 
   private async buildTranslate(): Promise<void> {
-    const location = "pages.products";
-    const translate = await firstValueFrom(this.translateService.get(location));
-    const generic = await firstValueFrom(this.translateService.get("generic"));
+    const location = 'pages.products'
+    const translate = await firstValueFrom(this.translateService.get(location))
+    const generic = await firstValueFrom(this.translateService.get('generic'))
 
-    this.translate = { ...translate, generic };
+    this.translate = { ...translate, generic }
   }
 
   protected onEdit(): void {
-    this.edit.emit();
+    this.edit.emit()
   }
 
   protected onDelete(): void {
-    this.delete.emit();
+    this.delete.emit()
   }
 
   protected onImageError(event: Event): void {
-    const target = event.target as HTMLImageElement;
-    target.style.display = "none";
+    const target = event.target as HTMLImageElement
+    target.style.display = 'none'
   }
 
   protected getStarArray(rating: number): number[] {
-    return Array(Math.floor(rating)).fill(0);
+    return Array(Math.floor(rating)).fill(0)
   }
 
   protected getPriceDisplay(price: number): string {
-    return `$${price.toFixed(2)}`;
+    return `$${price.toFixed(2)}`
   }
 
-  protected getOriginalPrice(
-    price: number,
-    discountPercentage: number
-  ): string {
-    const originalPrice = price / (1 - discountPercentage / 100);
-    return `$${originalPrice.toFixed(2)}`;
+  protected getOriginalPrice(price: number, discountPercentage: number): string {
+    const originalPrice = price / (1 - discountPercentage / 100)
+    return `$${originalPrice.toFixed(2)}`
   }
 
   protected getStockBadgeClass(): string {
-    const stock = this.product.stock;
+    const stock = this.product.stock
     if (stock === 0) {
-      return "bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full";
+      return 'bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full'
     } else if (stock <= 10) {
-      return "bg-yellow-500 text-white text-xs font-medium px-2 py-1 rounded-full";
+      return 'bg-yellow-500 text-white text-xs font-medium px-2 py-1 rounded-full'
     } else {
-      return "bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full";
+      return 'bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full'
     }
   }
 
   protected getStockText(): string {
-    const translate = this.translate?.stockStatus;
-    const stock = this.product.stock;
+    const translate = this.translate?.stockStatus
+    const stock = this.product.stock
 
     const stockConfig = [
       { condition: stock === 0, text: translate?.outOfStock },
       {
         condition: stock === 1,
-        text: translate?.inStockSingle?.replace("{{stock}}", stock.toString()),
+        text: translate?.inStockSingle?.replace('{{stock}}', stock.toString())
       },
       {
         condition: stock <= 10,
-        text: translate?.lowStock?.replace("{{stock}}", stock.toString()),
+        text: translate?.lowStock?.replace('{{stock}}', stock.toString())
       },
       { condition: stock >= 100, text: translate?.inStockPlus },
       {
         condition: stock > 10 && stock < 100,
-        text: translate?.inStock?.replace("{{stock}}", stock.toString()),
-      },
-    ];
+        text: translate?.inStock?.replace('{{stock}}', stock.toString())
+      }
+    ]
 
-    const match = stockConfig.find((config): boolean => config.condition);
-    return match?.text ?? "";
+    const match = stockConfig.find((config): boolean => config.condition)
+    return match?.text ?? ''
   }
 }
