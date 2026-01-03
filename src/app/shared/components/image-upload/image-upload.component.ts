@@ -28,9 +28,9 @@ export class ImageUploadComponent implements OnInit {
   public readonly maxSizePerImage = input<number>(10 * 1024 * 1024) // 10MB
   public readonly imagesChange = output<ImageUpload[]>()
 
-  protected translate: any
+  protected readonly translate = signal<any>(null)
   protected readonly dragOver = signal<boolean>(false)
-  protected errorMessage = ''
+  protected readonly errorMessage = signal<string>('')
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()
@@ -61,25 +61,25 @@ export class ImageUploadComponent implements OnInit {
     input.value = '' // Reset input
   }
 
+  // TODO Translate error messages
   protected addImageByUrl(url: string): void {
     if (!url.trim()) return
 
-    this.errorMessage = ''
+    this.errorMessage.set('')
 
     if (this.images().length >= this.maxImages()) {
-      this.errorMessage = `Máximo de ${this.maxImages()} imagens permitidas`
+      this.errorMessage.set(`Máximo de ${this.maxImages()} imagens permitidas`)
       return
     }
 
     if (!this.isValidImageUrl(url)) {
-      this.errorMessage = 'URL de imagem inválida'
+      this.errorMessage.set('URL de imagem inválida')
       return
     }
 
     const imageUpload: ImageUpload = {
       file: null,
-      url: url,
-      id: this.generateId()
+      url: url
     }
 
     const images: ImageUpload[] = [...this.images(), imageUpload]
@@ -98,27 +98,27 @@ export class ImageUploadComponent implements OnInit {
     const translate = await firstValueFrom(this.translateService.get(location))
     const generic = await firstValueFrom(this.translateService.get('generic'))
 
-    this.translate = { ...translate, generic }
+    this.translate.set({ ...translate, generic })
   }
 
+  // TODO Translate error messages
   private handleFiles(files: File[]): void {
-    this.errorMessage = ''
-
+    this.errorMessage.set('')
     if (this.images().length + files.length > this.maxImages()) {
-      this.errorMessage = `Máximo de ${this.maxImages()} imagens permitidas`
+      this.errorMessage.set(`Máximo de ${this.maxImages()} imagens permitidas`)
       return
     }
 
     files.forEach((file: File): void => {
       if (!file.type.startsWith('image/')) {
-        this.errorMessage = 'Apenas arquivos de imagem são permitidos'
+        this.errorMessage.set('Apenas arquivos de imagem são permitidos')
         return
       }
 
       if (file.size > this.maxSizePerImage()) {
-        this.errorMessage = `Arquivo muito grande. Máximo ${this.formatFileSize(
-          this.maxSizePerImage()
-        )}`
+        this.errorMessage.set(
+          `Arquivo muito grande. Máximo ${this.formatFileSize(this.maxSizePerImage())}`
+        )
         return
       }
 
@@ -131,8 +131,7 @@ export class ImageUploadComponent implements OnInit {
     reader.onload = (e: ProgressEvent<FileReader>): void => {
       const imageUpload: ImageUpload = {
         file: file,
-        url: e.target?.result as string,
-        id: this.generateId()
+        url: e.target?.result as string
       }
 
       const images: ImageUpload[] = [...this.images(), imageUpload]
@@ -148,10 +147,6 @@ export class ImageUploadComponent implements OnInit {
     } catch {
       return false
     }
-  }
-
-  private generateId(): string {
-    return Math.random().toString(36).substr(2, 9)
   }
 
   private formatFileSize(bytes: number): string {

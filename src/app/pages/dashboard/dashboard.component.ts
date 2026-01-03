@@ -29,10 +29,10 @@ interface CategoryData {
       <!-- Header -->
       <div>
         <h1 class="text-3xl font-bold text-gray-900">
-          {{ translate?.title || 'Dashboard' }}
+          {{ translate()?.title || 'Dashboard' }}
         </h1>
         <p class="text-gray-600 mt-1">
-          {{ translate?.subtitle }}
+          {{ translate()?.subtitle }}
         </p>
       </div>
 
@@ -46,7 +46,7 @@ interface CategoryData {
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-sm font-medium text-blue-800">
-                    {{ translate?.kpi?.totalProducts }}
+                    {{ translate()?.kpi?.totalProducts }}
                   </p>
                   <p class="text-3xl font-bold text-blue-900">
                     {{ kpiData().totalProducts }}
@@ -65,7 +65,7 @@ interface CategoryData {
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-sm font-medium text-green-800">
-                    {{ translate?.kpi?.totalStockValue }}
+                    {{ translate()?.kpi?.totalStockValue }}
                   </p>
                   <p class="text-3xl font-bold text-green-900">
                     &#36;{{ formatNumber(kpiData().totalStockValue) }}
@@ -84,7 +84,7 @@ interface CategoryData {
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-sm font-medium text-yellow-800">
-                    {{ translate?.kpi?.averagePrice }}
+                    {{ translate()?.kpi?.averagePrice }}
                   </p>
                   <p class="text-3xl font-bold text-yellow-900">
                     &#36;{{ formatNumber(kpiData().averagePrice) }}
@@ -103,7 +103,7 @@ interface CategoryData {
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-sm font-medium text-purple-800">
-                    {{ translate?.kpi?.uniqueCategories }}
+                    {{ translate()?.kpi?.uniqueCategories }}
                   </p>
                   <p class="text-3xl font-bold text-purple-900">
                     {{ kpiData().uniqueCategories }}
@@ -122,10 +122,10 @@ interface CategoryData {
             <div class="card">
               <div class="mb-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-2">
-                  {{ translate?.chart?.title }}
+                  {{ translate()?.chart?.title }}
                 </h2>
                 <p class="text-gray-600 text-sm">
-                  {{ translate?.chart?.subtitle }}
+                  {{ translate()?.chart?.subtitle }}
                 </p>
               </div>
 
@@ -170,7 +170,7 @@ interface CategoryData {
                         {{ kpiData().totalProducts }}
                       </div>
                       <div class="text-xs text-gray-600">
-                        {{ translate?.chart?.total }}
+                        {{ translate()?.chart?.total }}
                       </div>
                     </div>
                   </div>
@@ -189,7 +189,7 @@ interface CategoryData {
                       category.name
                     }}</span>
                     <span class="text-sm text-gray-500">
-                      {{ category.count }} {{ translate?.chart?.products }}
+                      {{ category.count }} {{ translate()?.chart?.products }}
                     </span>
                     <span
                       class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-auto"
@@ -203,10 +203,10 @@ interface CategoryData {
                   <div class="flex items-center space-x-3 pt-2 border-t">
                     <div class="w-4 h-4 rounded-full bg-gray-300"></div>
                     <span class="text-sm text-gray-600">
-                      {{ translate?.chart?.otherCategories }}
+                      {{ translate()?.chart?.otherCategories }}
                     </span>
                     <span class="text-sm text-gray-500">
-                      {{ getOtherCategoriesCount() }} {{ translate?.chart?.products }}
+                      {{ getOtherCategoriesCount() }} {{ translate()?.chart?.products }}
                     </span>
                     <span
                       class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-auto"
@@ -222,10 +222,10 @@ interface CategoryData {
             <div class="space-y-4">
               <div class="mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                  {{ translate?.topCategories?.title }}
+                  {{ translate()?.topCategories?.title }}
                 </h3>
                 <p class="text-gray-600 text-sm">
-                  {{ translate?.topCategories?.subtitle }}
+                  {{ translate()?.topCategories?.subtitle }}
                 </p>
               </div>
 
@@ -245,12 +245,12 @@ interface CategoryData {
                       </div>
                       <div class="text-sm opacity-90">
                         {{ category.percentage }}%
-                        {{ translate?.topCategories?.ofCatalog }}
+                        {{ translate()?.topCategories?.ofCatalog }}
                       </div>
                     </div>
                     <div class="text-right">
                       <div class="text-xs opacity-75 mb-1">
-                        #{{ $index + 1 }} {{ translate?.topCategories?.position }}
+                        #{{ $index + 1 }} {{ translate()?.topCategories?.position }}
                       </div>
                       <div class="w-16 h-2 bg-white/30 rounded-full">
                         <div
@@ -265,7 +265,7 @@ interface CategoryData {
               <!-- Quick Stats -->
               <div class="bg-gray-50 p-4 rounded-xl">
                 <h4 class="font-medium text-gray-900 mb-3">
-                  {{ translate?.quickStats?.title }}
+                  {{ translate()?.quickStats?.title }}
                 </h4>
                 <div class="grid grid-cols-2 gap-3 text-sm">
                   <div class="text-center p-2 bg-white rounded-lg">
@@ -273,7 +273,7 @@ interface CategoryData {
                       {{ categoriesData().length }}
                     </div>
                     <div class="text-gray-600 text-xs">
-                      {{ translate?.quickStats?.categories }}
+                      {{ translate()?.quickStats?.categories }}
                     </div>
                   </div>
                   <div class="text-center p-2 bg-white rounded-lg">
@@ -281,7 +281,7 @@ interface CategoryData {
                       {{ getAverageProductsPerCategory() }}
                     </div>
                     <div class="text-gray-600 text-xs">
-                      {{ translate?.quickStats?.avgPerCategory }}
+                      {{ translate()?.quickStats?.avgPerCategory }}
                     </div>
                   </div>
                 </div>
@@ -293,10 +293,10 @@ interface CategoryData {
           <div class="card">
             <div class="mb-6">
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                {{ translate?.allCategories?.title }}
+                {{ translate()?.allCategories?.title }}
               </h3>
               <p class="text-gray-600 text-sm">
-                {{ translate?.allCategories?.subtitle }}
+                {{ translate()?.allCategories?.subtitle }}
               </p>
             </div>
 
@@ -350,13 +350,13 @@ interface CategoryData {
         <div class="text-center py-12">
           <div class="text-red-400 text-6xl mb-4">⚠️</div>
           <h3 class="text-lg font-medium text-gray-900 mb-2">
-            {{ genericTranslate?.error }}
+            {{ translate()?.generic?.error }}
           </h3>
           <p class="text-gray-500">
-            {{ translate?.error?.message }}
+            {{ translate()?.error?.message }}
           </p>
           <button (click)="loadDashboardData()" class="mt-4 btn-primary">
-            {{ genericTranslate?.retry }}
+            {{ translate()?.generic?.retry }}
           </button>
         </div>
       }
@@ -380,12 +380,11 @@ export class DashboardComponent implements OnInit {
   // Signals
   protected readonly products = signal<Product[]>([])
   protected readonly hasError = signal<boolean>(false)
+  protected readonly translate = signal<any>(null)
   protected readonly isLoading = this.loadingService.isLoading
-  protected translate: any
-  protected genericTranslate: any
 
   // Computed values
-  protected kpiData = computed<KPIData>((): KPIData => {
+  protected readonly kpiData = computed<KPIData>((): KPIData => {
     const products: Product[] = this.products()
 
     if (products.length === 0) {
@@ -417,7 +416,7 @@ export class DashboardComponent implements OnInit {
     }
   })
 
-  protected categoriesData = computed<CategoryData[]>((): CategoryData[] => {
+  protected readonly categoriesData = computed<CategoryData[]>((): CategoryData[] => {
     const products: Product[] = this.products()
 
     if (products.length === 0) {
@@ -450,20 +449,6 @@ export class DashboardComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()
     await this.loadDashboardData()
-  }
-
-  private async buildTranslate(): Promise<void> {
-    try {
-      const dashboardTranslate = await firstValueFrom(
-        this.translateService.get('pages.dashboard')
-      )
-      const genericTranslate = await firstValueFrom(this.translateService.get('generic'))
-
-      this.translate = dashboardTranslate
-      this.genericTranslate = genericTranslate
-    } catch (error: unknown) {
-      console.error('Error loading translations:', error)
-    }
   }
 
   protected async loadDashboardData(): Promise<void> {
@@ -610,5 +595,16 @@ export class DashboardComponent implements OnInit {
       0
     )
     return Math.max(0, 100 - topPercentage)
+  }
+
+  private async buildTranslate(): Promise<void> {
+    try {
+      const translate = await firstValueFrom(this.translateService.get('pages.dashboard'))
+      const generic = await firstValueFrom(this.translateService.get('generic'))
+
+      this.translate.set({ ...translate, generic })
+    } catch (error: unknown) {
+      console.error('Error loading translations:', error)
+    }
   }
 }

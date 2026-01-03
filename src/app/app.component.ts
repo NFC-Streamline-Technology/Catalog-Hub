@@ -20,7 +20,7 @@ import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loa
   `
 })
 export class AppComponent implements OnInit {
-  private translateService = inject(TranslateService)
+  private readonly translateService = inject(TranslateService)
 
   ngOnInit(): void {
     // Set default language

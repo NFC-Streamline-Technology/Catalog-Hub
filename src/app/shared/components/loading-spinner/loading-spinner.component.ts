@@ -41,10 +41,9 @@ export class LoadingSpinnerComponent implements OnInit {
   protected readonly translateService = inject(TranslateService)
 
   protected readonly isLoading = this.loadingService.isLoading
-  protected translate = signal<any>(null)
+  protected readonly translate = signal<any>(null)
 
   async ngOnInit(): Promise<void> {
-    // Initialize translations for the current language
     await this.buildTranslate()
   }
 

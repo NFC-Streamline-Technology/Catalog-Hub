@@ -316,8 +316,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
       this.productImages = []
       if (this.product.images && this.product.images.length > 0) {
         this.productImages = this.product.images.map(
-          (url: string, index: number): ImageUpload => ({
-            id: `existing-${index}`,
+          (url: string): ImageUpload => ({
             url: url,
             file: null
           })
@@ -325,7 +324,6 @@ export class ProductFormComponent implements OnInit, OnChanges {
       } else if (this.product.thumbnail) {
         this.productImages = [
           {
-            id: 'existing-0',
             url: this.product.thumbnail,
             file: null
           }

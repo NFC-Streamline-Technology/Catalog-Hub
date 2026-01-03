@@ -1,7 +1,7 @@
 <fieldset>
   <label class="form-label">
-    {{ translate?.images }}
-    <span class="text-xs text-gray-500 ml-1">({{ translate?.generic?.optional }})</span>
+    {{ translate()?.images }}
+    <span class="text-xs text-gray-500 ml-1">({{ translate()?.generic?.optional }})</span>
   </label>
 
   <!-- Upload Area -->
@@ -32,13 +32,13 @@
         <label
           class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
         >
-          <span>{{ translate?.uploadFile }}</span>
+          <span>{{ translate()?.uploadFile }}</span>
           <input #fileInput type="file" class="sr-only" multiple accept="image/*" (change)="onFileSelected($event)" />
         </label>
-        <p class="pl-1">{{ translate?.orDragDrop }}</p>
+        <p class="pl-1">{{ translate()?.orDragDrop }}</p>
       </div>
       <p class="text-xs text-gray-500">
-        {{ translate?.imageFormats }}
+        {{ translate()?.imageFormats }}
       </p>
     </div>
   </fieldset>
@@ -64,7 +64,7 @@
           <!-- Primary indicator -->
           @if ($index === 0) {
             <div class="absolute bottom-2 left-2 bg-primary-600 text-white text-xs px-2 py-1 rounded">
-              {{ translate?.primary || 'Principal' }}
+              {{ translate()?.primary || 'Principal' }}
             </div>
           }
         </div>
@@ -75,7 +75,7 @@
   <!-- URL Input for manual addition -->
   <fieldset class="mt-4">
     <label class="form-label text-sm">
-      {{ translate?.addByUrl }}
+      {{ translate()?.addByUrl }}
     </label>
     <div class="flex space-x-2">
       <input
@@ -86,15 +86,15 @@
         (keydown.enter)="addImageByUrl(urlInput.value); urlInput.value = ''"
       />
       <button type="button" (click)="addImageByUrl(urlInput.value); urlInput.value = ''" class="btn-secondary">
-        {{ translate?.generic?.add }}
+        {{ translate()?.generic?.add }}
       </button>
     </div>
   </fieldset>
 
   <!-- Error messages -->
-  @if (errorMessage) {
+  @if (errorMessage()) {
     <div class="mt-2 text-red-600 text-sm">
-      {{ errorMessage }}
+      {{ errorMessage() }}
     </div>
   }
 </fieldset>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core'
+import { Component, OnInit, inject, input, output } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
@@ -10,19 +10,19 @@ import { PaginationState } from '../../models/product.model'
   standalone: true,
   imports: [CommonModule],
   template: `
-    @if (pagination.totalPages > 1) {
+    @if (pagination().totalPages > 1) {
       <div class="flex items-center justify-between px-4 py-3 sm:px-6">
         <div class="flex flex-1 justify-between sm:hidden">
           <button
-            (click)="onPageChange(pagination.currentPage - 1)"
-            [disabled]="pagination.currentPage === 1"
+            (click)="onPageChange(pagination().currentPage - 1)"
+            [disabled]="pagination().currentPage === 1"
             class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {{ translate?.previous }}
           </button>
           <button
-            (click)="onPageChange(pagination.currentPage + 1)"
-            [disabled]="pagination.currentPage === pagination.totalPages"
+            (click)="onPageChange(pagination().currentPage + 1)"
+            [disabled]="pagination().currentPage === pagination().totalPages"
             class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {{ translate?.next }}
@@ -33,11 +33,11 @@ import { PaginationState } from '../../models/product.model'
           <div>
             <p class="text-sm text-gray-700">
               {{ translate?.showing }}
-              <span class="font-medium">{{ getStartItem() }}</span>
+              <span class="font-medium">{{ startItem }}</span>
               {{ translate?.to }}
-              <span class="font-medium">{{ getEndItem() }}</span>
+              <span class="font-medium">{{ endItem }}</span>
               {{ translate?.of }}
-              <span class="font-medium">{{ pagination.totalItems }}</span>
+              <span class="font-medium">{{ pagination().totalItems }}</span>
               {{ translate?.results }}
             </p>
           </div>
@@ -48,8 +48,8 @@ import { PaginationState } from '../../models/product.model'
             >
               <!-- Previous button -->
               <button
-                (click)="onPageChange(pagination.currentPage - 1)"
-                [disabled]="pagination.currentPage === 1"
+                (click)="onPageChange(pagination().currentPage - 1)"
+                [disabled]="pagination().currentPage === 1"
                 class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span class="sr-only">{{ translate?.previous }}</span>
@@ -80,8 +80,8 @@ import { PaginationState } from '../../models/product.model'
 
               <!-- Next button -->
               <button
-                (click)="onPageChange(pagination.currentPage + 1)"
-                [disabled]="pagination.currentPage === pagination.totalPages"
+                (click)="onPageChange(pagination().currentPage + 1)"
+                [disabled]="pagination().currentPage === pagination().totalPages"
                 class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span class="sr-only">{{ translate?.next }}</span>
@@ -115,14 +115,78 @@ export class PaginationComponent implements OnInit {
       })
   }
 
-  @Input({ required: true }) pagination!: PaginationState
-  @Output() pageChanged = new EventEmitter<number>()
+  public readonly pagination = input.required<PaginationState>()
+  public readonly pageChanged = output<number>()
 
   private translateService = inject(TranslateService)
   protected translate: any
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()
+  }
+
+  protected onPageChange(page: number): void {
+    const isPageValid = page >= 1 && page <= this.pagination().totalPages
+    const isCurrentPage = page === this.pagination().currentPage
+
+    if (isPageValid && !isCurrentPage) {
+      this.pageChanged.emit(page)
+    }
+  }
+
+  protected getVisiblePages(): number[] {
+    const totalPages: number = this.pagination().totalPages
+    const currentPage: number = this.pagination().currentPage
+    const pages: number[] = []
+    const ellipsis = -1
+
+    const renderPages = (start: number, end: number): number[] => {
+      for (let page = start; page <= end; page++) {
+        pages.push(page)
+      }
+
+      return pages
+    }
+
+    if (totalPages <= 7) {
+      return renderPages(1, totalPages)
+    }
+
+    if (currentPage <= 4) {
+      renderPages(1, 5)
+      pages.push(ellipsis, totalPages)
+
+      return pages
+    }
+
+    if (currentPage >= totalPages - 3) {
+      pages.push(1, ellipsis)
+      renderPages(totalPages - 4, totalPages)
+
+      return pages
+    }
+
+    pages.push(1, ellipsis)
+    renderPages(currentPage - 1, currentPage + 1)
+    pages.push(ellipsis, totalPages)
+
+    return pages
+  }
+
+  protected getPageButtonClass(page: number): string {
+    const defaultClass = `relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300`
+
+    const isEllipsis = page === -1
+    if (isEllipsis) {
+      return `${defaultClass} text-gray-700 cursor-default`
+    }
+
+    const baseClass = `${defaultClass} hover:bg-primary-500 hover:text-white focus:z-20 focus:outline-offset-0 transition-colors duration-200`
+    if (page === this.pagination().currentPage) {
+      return `${baseClass} z-10 bg-primary-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600`
+    }
+
+    return `${baseClass} text-gray-900`
   }
 
   private async buildTranslate(): Promise<void> {
@@ -132,74 +196,12 @@ export class PaginationComponent implements OnInit {
     this.translate = { ...generic, ...pagination }
   }
 
-  protected onPageChange(page: number): void {
-    if (
-      page >= 1 &&
-      page <= this.pagination.totalPages &&
-      page !== this.pagination.currentPage
-    ) {
-      this.pageChanged.emit(page)
-    }
+  protected get startItem(): number {
+    return (this.pagination().currentPage - 1) * this.pagination().pageSize + 1
   }
 
-  protected getStartItem(): number {
-    return (this.pagination.currentPage - 1) * this.pagination.pageSize + 1
-  }
-
-  protected getEndItem(): number {
-    const end = this.pagination.currentPage * this.pagination.pageSize
-    return Math.min(end, this.pagination.totalItems)
-  }
-
-  protected getVisiblePages(): number[] {
-    const totalPages: number = this.pagination.totalPages
-    const currentPage: number = this.pagination.currentPage
-    const pages: number[] = []
-
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i)
-      }
-    } else {
-      if (currentPage <= 4) {
-        for (let i = 1; i <= 5; i++) {
-          pages.push(i)
-        }
-        pages.push(-1) // ellipsis
-        pages.push(totalPages)
-      } else if (currentPage >= totalPages - 3) {
-        pages.push(1)
-        pages.push(-1) // ellipsis
-        for (let i = totalPages - 4; i <= totalPages; i++) {
-          pages.push(i)
-        }
-      } else {
-        pages.push(1)
-        pages.push(-1) // ellipsis
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pages.push(i)
-        }
-        pages.push(-1) // ellipsis
-        pages.push(totalPages)
-      }
-    }
-
-    return pages
-  }
-
-  protected getPageButtonClass(page: number): string {
-    const defaultClass =
-      'relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300'
-    if (page === -1) {
-      return `${defaultClass} text-gray-700 cursor-default`
-    }
-
-    const baseClass = `${defaultClass} focus:z-20 focus:outline-offset-0 transition-colors duration-200`
-
-    if (page === this.pagination.currentPage) {
-      return `${baseClass} z-10 bg-primary-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600`
-    }
-
-    return `${baseClass} text-gray-900 hover:bg-gray-50 hover:text-primary-600`
+  protected get endItem(): number {
+    const end = this.pagination().currentPage * this.pagination().pageSize
+    return Math.min(end, this.pagination().totalItems)
   }
 }

@@ -8,15 +8,10 @@ import {
 } from '@angular/fire/analytics'
 import { FirebaseApp, initializeApp, provideFirebaseApp } from '@angular/fire/app'
 import { provideRouter } from '@angular/router'
+import { loadingInterceptor } from '@core/interceptors/loading.interceptor'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { TranslateHttpLoader } from '@ngx-translate/http-loader'
 import { routes } from './app.routes'
-import { loadingInterceptor } from './core/interceptors/loading.interceptor'
-
-// Factory function for translation loader
-export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json')
-}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,7 +21,9 @@ export const appConfig: ApplicationConfig = {
       TranslateModule.forRoot({
         loader: {
           provide: TranslateLoader,
-          useFactory: HttpLoaderFactory,
+          useFactory: (http: HttpClient): TranslateHttpLoader => {
+            return new TranslateHttpLoader(http, './assets/i18n/', '.json')
+          },
           deps: [HttpClient]
         },
         defaultLanguage: 'pt-BR'
