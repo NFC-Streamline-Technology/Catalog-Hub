@@ -167,6 +167,9 @@ import { ProductService } from './services/product.service'
   `
 })
 export class ProductsComponent implements OnInit {
+  private readonly productService = inject(ProductService)
+  private readonly translateService = inject(TranslateService)
+
   constructor() {
     this.setupSearch()
     this.setupPageSizeChange()
@@ -178,9 +181,6 @@ export class ProductsComponent implements OnInit {
         await this.buildTranslate()
       })
   }
-
-  private productService = inject(ProductService)
-  private translateService = inject(TranslateService)
 
   // Signals
   protected readonly categories = signal<string[]>([])

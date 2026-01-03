@@ -250,6 +250,10 @@ import { ProductService } from '../../services/product.service'
   `
 })
 export class ProductFormComponent implements OnInit, OnChanges {
+  private readonly fb = inject(FormBuilder)
+  private readonly productService = inject(ProductService)
+  private readonly translateService = inject(TranslateService)
+
   constructor() {
     // Listen for language changes
     this.translateService.onLangChange
@@ -263,10 +267,6 @@ export class ProductFormComponent implements OnInit, OnChanges {
   @Input() isVisible = false
   @Output() saved = new EventEmitter<Product>()
   @Output() cancelled = new EventEmitter<void>()
-
-  private readonly fb = inject(FormBuilder)
-  private readonly productService = inject(ProductService)
-  private readonly translateService = inject(TranslateService)
 
   protected readonly categories = signal<string[]>([])
   protected readonly isSubmitting = signal<boolean>(false)

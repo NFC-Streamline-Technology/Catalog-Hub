@@ -12,6 +12,8 @@ import { firstValueFrom } from 'rxjs'
   templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
+  private readonly translateService = inject(TranslateService)
+
   constructor() {
     // Listen for language changes
     this.translateService.onLangChange
@@ -20,8 +22,6 @@ export class HeaderComponent implements OnInit {
         await this.buildTranslate()
       })
   }
-
-  private readonly translateService = inject(TranslateService)
 
   protected readonly translate = signal<any>(null)
 

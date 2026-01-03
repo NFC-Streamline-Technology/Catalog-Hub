@@ -28,6 +28,9 @@ import { firstValueFrom } from 'rxjs'
   `
 })
 export class LoadingSpinnerComponent implements OnInit {
+  protected readonly loadingService = inject(LoadingService)
+  protected readonly translateService = inject(TranslateService)
+
   constructor() {
     // Listen for language changes
     this.translateService.onLangChange
@@ -36,9 +39,6 @@ export class LoadingSpinnerComponent implements OnInit {
         await this.buildTranslate()
       })
   }
-
-  protected readonly loadingService = inject(LoadingService)
-  protected readonly translateService = inject(TranslateService)
 
   protected readonly isLoading = this.loadingService.isLoading
   protected readonly translate = signal<any>(null)

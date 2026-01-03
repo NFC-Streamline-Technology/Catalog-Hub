@@ -106,6 +106,8 @@ import { PaginationState } from '../../models/product.model'
   `
 })
 export class PaginationComponent implements OnInit {
+  private readonly translateService = inject(TranslateService)
+
   constructor() {
     // Listen for language changes
     this.translateService.onLangChange
@@ -114,8 +116,6 @@ export class PaginationComponent implements OnInit {
         await this.buildTranslate()
       })
   }
-
-  private readonly translateService = inject(TranslateService)
 
   public readonly pagination = input.required<PaginationState>()
   public readonly pageChanged = output<number>()

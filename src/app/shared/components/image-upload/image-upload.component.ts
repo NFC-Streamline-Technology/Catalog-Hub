@@ -12,6 +12,8 @@ import { ImageUpload } from '../../models/product.model'
   templateUrl: './image-upload.component.html'
 })
 export class ImageUploadComponent implements OnInit {
+  private readonly translateService = inject(TranslateService)
+
   constructor() {
     // Listen for language changes
     this.translateService.onLangChange
@@ -20,8 +22,6 @@ export class ImageUploadComponent implements OnInit {
         await this.buildTranslate()
       })
   }
-
-  private readonly translateService = inject(TranslateService)
 
   public readonly images = input<ImageUpload[]>([])
   public readonly maxImages = input<number>(5)

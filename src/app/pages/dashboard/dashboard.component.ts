@@ -364,6 +364,10 @@ interface CategoryData {
   `
 })
 export class DashboardComponent implements OnInit {
+  private readonly dashboardService = inject(DashboardService)
+  private readonly translateService = inject(TranslateService)
+  private readonly loadingService = inject(LoadingService)
+
   constructor() {
     // Listen for language changes
     this.translateService.onLangChange
@@ -372,10 +376,6 @@ export class DashboardComponent implements OnInit {
         await this.buildTranslate()
       })
   }
-
-  private readonly dashboardService = inject(DashboardService)
-  private readonly translateService = inject(TranslateService)
-  private readonly loadingService = inject(LoadingService)
 
   // Signals
   protected readonly products = signal<Product[]>([])

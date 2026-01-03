@@ -109,6 +109,8 @@ import { firstValueFrom } from 'rxjs'
   ]
 })
 export class ProductCardComponent implements OnInit {
+  private readonly translateService = inject(TranslateService)
+
   constructor() {
     // Listen for language changes
     this.translateService.onLangChange
@@ -125,8 +127,6 @@ export class ProductCardComponent implements OnInit {
   protected readonly icons = { faEdit, faTrash, faBox }
 
   protected translate: any
-
-  private translateService = inject(TranslateService)
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()

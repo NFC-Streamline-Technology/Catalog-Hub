@@ -11,6 +11,8 @@ import { firstValueFrom } from 'rxjs'
   templateUrl: './confirm-dialog.component.html'
 })
 export class ConfirmDialogComponent implements OnInit {
+  private readonly translateService = inject(TranslateService)
+
   constructor() {
     // Listen for language changes
     this.translateService.onLangChange
@@ -19,8 +21,6 @@ export class ConfirmDialogComponent implements OnInit {
         await this.buildTranslate()
       })
   }
-
-  private readonly translateService = inject(TranslateService)
 
   public readonly isVisible = input<boolean>(false)
   public readonly message = input<string>('')
