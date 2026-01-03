@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, inject, input, output } from '@angular/core'
+import { Component, OnInit, inject, input, output, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
@@ -18,27 +18,27 @@ import { PaginationState } from '../../models/product.model'
             [disabled]="pagination().currentPage === 1"
             class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ translate?.previous }}
+            {{ translate()?.previous }}
           </button>
           <button
             (click)="onPageChange(pagination().currentPage + 1)"
             [disabled]="pagination().currentPage === pagination().totalPages"
             class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ translate?.next }}
+            {{ translate()?.next }}
           </button>
         </div>
 
         <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
             <p class="text-sm text-gray-700">
-              {{ translate?.showing }}
+              {{ translate()?.showing }}
               <span class="font-medium">{{ startItem }}</span>
-              {{ translate?.to }}
+              {{ translate()?.to }}
               <span class="font-medium">{{ endItem }}</span>
-              {{ translate?.of }}
+              {{ translate()?.of }}
               <span class="font-medium">{{ pagination().totalItems }}</span>
-              {{ translate?.results }}
+              {{ translate()?.results }}
             </p>
           </div>
           <div>
@@ -52,7 +52,7 @@ import { PaginationState } from '../../models/product.model'
                 [disabled]="pagination().currentPage === 1"
                 class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span class="sr-only">{{ translate?.previous }}</span>
+                <span class="sr-only">{{ translate()?.previous }}</span>
                 <svg
                   class="h-5 w-5"
                   viewBox="0 0 20 20"
@@ -84,7 +84,7 @@ import { PaginationState } from '../../models/product.model'
                 [disabled]="pagination().currentPage === pagination().totalPages"
                 class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span class="sr-only">{{ translate?.next }}</span>
+                <span class="sr-only">{{ translate()?.next }}</span>
                 <svg
                   class="h-5 w-5"
                   viewBox="0 0 20 20"
@@ -115,11 +115,12 @@ export class PaginationComponent implements OnInit {
       })
   }
 
+  private readonly translateService = inject(TranslateService)
+
   public readonly pagination = input.required<PaginationState>()
   public readonly pageChanged = output<number>()
 
-  private translateService = inject(TranslateService)
-  protected translate: any
+  protected readonly translate = signal<any>(null)
 
   async ngOnInit(): Promise<void> {
     await this.buildTranslate()
@@ -193,7 +194,7 @@ export class PaginationComponent implements OnInit {
     const generic = await firstValueFrom(this.translateService.get('generic'))
     const pagination = await firstValueFrom(this.translateService.get('pagination'))
 
-    this.translate = { ...generic, ...pagination }
+    this.translate.set({ ...generic, ...pagination })
   }
 
   protected get startItem(): number {
