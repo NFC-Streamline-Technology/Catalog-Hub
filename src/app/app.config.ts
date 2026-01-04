@@ -16,6 +16,7 @@ import { provideRouter } from '@angular/router'
 import { loadingInterceptor } from '@core/interceptors/loading.interceptor'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { TranslateHttpLoader } from '@ngx-translate/http-loader'
+import { environment } from '../environments/environment'
 import { routes } from './app.routes'
 
 export const appConfig: ApplicationConfig = {
@@ -35,18 +36,7 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideFirebaseApp(
-      (): FirebaseApp =>
-        initializeApp(<FirebaseOptions>{
-          projectId: 'catalog-hub-73d36',
-          appId: '1:450368403280:web:3692e0b4be542a5e891e55',
-          storageBucket: 'catalog-hub-73d36.firebasestorage.app',
-          apiKey: 'AIzaSyA_-uzPsxJb1eCi3IIXOeJSMYXmj2oYEns',
-          authDomain: 'catalog-hub-73d36.firebaseapp.com',
-          messagingSenderId: '450368403280',
-          measurementId: 'G-NJVZTP7TWS',
-          projectNumber: '450368403280',
-          version: '2'
-        })
+      (): FirebaseApp => initializeApp(<FirebaseOptions>environment.firebase)
     ),
     provideAnalytics((): Analytics => getAnalytics()),
     ScreenTrackingService

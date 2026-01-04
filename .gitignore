@@ -49,10 +49,13 @@ Thumbs.db
 
 # dotenv environment variable files
 .env
-.env.development.local
-.env.test.local
-.env.production.local
 .env.local
+.env.*.local
+
+# Environments (keep only .example files)
+/src/environments/*
+!/src/environments/environment.example.ts
+!/src/environments/ENVIRONMENT_SETUP.md
 
 # Firebase
 .firebase
