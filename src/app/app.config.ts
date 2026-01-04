@@ -6,7 +6,12 @@ import {
   provideAnalytics,
   ScreenTrackingService
 } from '@angular/fire/analytics'
-import { FirebaseApp, initializeApp, provideFirebaseApp } from '@angular/fire/app'
+import {
+  FirebaseApp,
+  FirebaseOptions,
+  initializeApp,
+  provideFirebaseApp
+} from '@angular/fire/app'
 import { provideRouter } from '@angular/router'
 import { loadingInterceptor } from '@core/interceptors/loading.interceptor'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
@@ -31,7 +36,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideFirebaseApp(
       (): FirebaseApp =>
-        initializeApp(<any>{
+        initializeApp(<FirebaseOptions>{
           projectId: 'catalog-hub-73d36',
           appId: '1:450368403280:web:3692e0b4be542a5e891e55',
           storageBucket: 'catalog-hub-73d36.firebasestorage.app',
